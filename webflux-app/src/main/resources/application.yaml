@@ -14,43 +14,7 @@ server:
 # Logging configuration
 logging:
   level:
-    me.bossm0n5t3r: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.data: DEBUG
-    reactor.netty: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
----
-# Development profile
-spring:
-  config:
-    activate:
-      on-profile: dev
-logging:
-  level:
-    me.bossm0n5t3r: DEBUG
-    org.springframework.web: DEBUG
-    reactor.netty: DEBUG
-
----
-# Production profile
-spring:
-  config:
-    activate:
-      on-profile: prod
-logging:
-  level:
-    root: WARN
-    me.bossm0n5t3r: INFO
-
----
-# Benchmark profile
-spring:
-  config:
-    activate:
-      on-profile: benchmark
-logging:
-  level:
     root: WARN
     me.bossm0n5t3r: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

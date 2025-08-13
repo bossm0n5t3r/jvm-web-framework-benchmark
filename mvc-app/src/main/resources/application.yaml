@@ -23,47 +23,7 @@ server:
 # Logging configuration
 logging:
   level:
-    me.bossm0n5t3r: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.data: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
----
-# Development profile
-spring:
-  config:
-    activate:
-      on-profile: dev
-  jpa:
-    show-sql: true
-logging:
-  level:
-    me.bossm0n5t3r: DEBUG
-    org.springframework.web: DEBUG
-
----
-# Production profile
-spring:
-  config:
-    activate:
-      on-profile: prod
-  jpa:
-    show-sql: false
-logging:
-  level:
-    root: WARN
-    me.bossm0n5t3r: INFO
-
----
-# Benchmark profile
-spring:
-  config:
-    activate:
-      on-profile: benchmark
-  jpa:
-    show-sql: false
-logging:
-  level:
     root: WARN
     me.bossm0n5t3r: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
