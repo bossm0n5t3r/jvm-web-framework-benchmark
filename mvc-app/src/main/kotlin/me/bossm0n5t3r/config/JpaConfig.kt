@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableJpaRepositories(basePackages = ["me.bossm0n5t3r.repository.jpa"])
+@EnableJpaRepositories(basePackages = ["me.bossm0n5t3r.repository"])
 @EntityScan(basePackages = ["me.bossm0n5t3r.entity"])
 @EnableTransactionManagement
 class JpaConfig

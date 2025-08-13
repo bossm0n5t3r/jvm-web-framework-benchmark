@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.repository.jpa
+package me.bossm0n5t3r.repository
 
 import me.bossm0n5t3r.entity.User
 import org.springframework.data.jpa.repository.JpaRepository

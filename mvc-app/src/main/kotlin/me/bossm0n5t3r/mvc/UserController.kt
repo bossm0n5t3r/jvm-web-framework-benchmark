@@ -2,7 +2,7 @@ package me.bossm0n5t3r.mvc
 
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.entity.User
-import me.bossm0n5t3r.repository.jpa.UserRepository
+import me.bossm0n5t3r.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
