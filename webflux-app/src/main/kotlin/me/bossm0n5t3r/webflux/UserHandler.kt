@@ -2,7 +2,7 @@ package me.bossm0n5t3r.webflux
 
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.entity.ReactiveUser
-import me.bossm0n5t3r.repository.r2dbc.ReactiveUserRepository
+import me.bossm0n5t3r.repository.ReactiveUserRepository
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest

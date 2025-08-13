@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.repository.r2dbc
+package me.bossm0n5t3r.repository
 
 import me.bossm0n5t3r.entity.ReactiveUser
 import org.springframework.data.r2dbc.repository.Query
