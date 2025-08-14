@@ -12,7 +12,6 @@ import me.bossm0n5t3r.dto.UserRequest
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.dataFrameOf
 import org.jetbrains.kotlinx.dataframe.api.describe
-import org.jetbrains.kotlinx.dataframe.api.percentile
 import org.jetbrains.kotlinx.dataframe.api.percentileOrNull
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -31,32 +30,6 @@ import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.system.measureTimeMillis
-
-@SpringBootApplication
-class BenchmarkApplication
-
-fun main(args: Array<String>) {
-    SpringApplication.run(BenchmarkApplication::class.java, *args)
-}
-
-data class BenchmarkResult(
-    val framework: String,
-    val totalRequests: Int,
-    val successfulRequests: Int,
-    val failedRequests: Int,
-    val totalTimeMs: Long,
-    val averageResponseTimeMs: Double,
-    val minResponseTimeMs: Double,
-    val maxResponseTimeMs: Double,
-    val p95ResponseTimeMs: Double,
-    val p99ResponseTimeMs: Double,
-    val throughputRps: Double,
-)
-
-data class BenchmarkScenario(
-    val name: String,
-    val run: () -> Unit,
-)
 
 @OptIn(ExperimentalAtomicApi::class)
 @Component
