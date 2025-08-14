@@ -14,8 +14,6 @@ import org.jetbrains.kotlinx.dataframe.api.dataFrameOf
 import org.jetbrains.kotlinx.dataframe.api.describe
 import org.jetbrains.kotlinx.dataframe.api.percentileOrNull
 import org.springframework.boot.CommandLineRunner
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -610,76 +608,86 @@ class WebFrameworkBenchmark : CommandLineRunner {
         webfluxResult: BenchmarkResult,
         scenarioName: String,
     ) {
-        // Add scenario header
-        benchmarkResults.append("=".repeat(60)).append("\n")
-        benchmarkResults.append("$scenarioName\n")
-        benchmarkResults.append("=".repeat(60)).append("\n")
+        // Add scenario header in proper markdown format
+        benchmarkResults.append("## $scenarioName\n\n")
+
+        benchmarkResults.append("**Test Configuration:**\n")
         benchmarkResults.append(
-            "📊 Testing MVC - ${mvcResult.totalRequests} requests, ${if (mvcResult.totalRequests >= 100) 10 else 5} concurrent\n",
+            "- 📊 MVC: ${mvcResult.totalRequests} requests, ${if (mvcResult.totalRequests >= 100) 10 else 5} concurrent\n",
         )
         benchmarkResults.append(
-            "📊 Testing WebFlux - ${webfluxResult.totalRequests} requests, ${if (webfluxResult.totalRequests >= 100) 10 else 5} concurrent\n",
+            "- 📊 WebFlux: ${webfluxResult.totalRequests} requests, ${if (webfluxResult.totalRequests >= 100) 10 else 5} concurrent\n\n",
         )
-        benchmarkResults.append("📈 Results Comparison:\n\n")
 
         // Success rate
         val mvcSuccessRate = (mvcResult.successfulRequests.toDouble() / mvcResult.totalRequests * 100)
         val webfluxSuccessRate = (webfluxResult.successfulRequests.toDouble() / webfluxResult.totalRequests * 100)
 
-        benchmarkResults.append("Success Rate:\n")
-        benchmarkResults.append(
-            "MVC:     ${
-                String.format(
-                    "%.1f%%",
-                    mvcSuccessRate,
-                )
-            } (${mvcResult.successfulRequests}/${mvcResult.totalRequests})\n",
-        )
-        benchmarkResults.append(
-            "WebFlux: ${
-                String.format(
-                    "%.1f%%",
-                    webfluxSuccessRate,
-                )
-            } (${webfluxResult.successfulRequests}/${webfluxResult.totalRequests})\n",
-        )
+        // Create comparison table
+        benchmarkResults.append("### 📈 Results Comparison\n\n")
+        benchmarkResults.append("| Metric | MVC | WebFlux | Winner |\n")
+        benchmarkResults.append("|--------|-----|---------|--------|\n")
 
-        // Throughput
-        benchmarkResults.append("\nThroughput (requests/sec):\n")
-        benchmarkResults.append("MVC:     ${String.format("%.1f", mvcResult.throughputRps)}\n")
-        benchmarkResults.append("WebFlux: ${String.format("%.1f", webfluxResult.throughputRps)}\n")
+        // Success Rate row
+        benchmarkResults.append(
+            "| **Success Rate** | ${String.format(
+                "%.1f%%",
+                mvcSuccessRate,
+            )} (${mvcResult.successfulRequests}/${mvcResult.totalRequests}) | ${String.format(
+                "%.1f%%",
+                webfluxSuccessRate,
+            )} (${webfluxResult.successfulRequests}/${webfluxResult.totalRequests}) | ",
+        )
+        val successWinner = if (webfluxSuccessRate >= mvcSuccessRate) "🏆 WebFlux" else "🏆 MVC"
+        benchmarkResults.append("$successWinner |\n")
+
+        // Throughput row
         val throughputWinner = if (webfluxResult.throughputRps > mvcResult.throughputRps) "WebFlux" else "MVC"
         val throughputDiff =
             kotlin.math.abs(webfluxResult.throughputRps - mvcResult.throughputRps) /
-                kotlin.math.max(mvcResult.throughputRps, webfluxResult.throughputRps) *
-                100
-        benchmarkResults.append("Winner: 🏆 $throughputWinner (${String.format("%.1f%%", throughputDiff)} faster)\n")
+                kotlin.math.max(mvcResult.throughputRps, webfluxResult.throughputRps) * 100
+        benchmarkResults.append(
+            "| **Throughput (req/sec)** | ${String.format(
+                "%.1f",
+                mvcResult.throughputRps,
+            )} | ${String.format(
+                "%.1f",
+                webfluxResult.throughputRps,
+            )} | 🏆 $throughputWinner (+${String.format("%.1f%%", throughputDiff)}) |\n",
+        )
 
-        // Response times
-        benchmarkResults.append("\nResponse Times (ms):\n")
-        benchmarkResults.append("Average:\n")
-        benchmarkResults.append("MVC:     ${String.format("%.1f", mvcResult.averageResponseTimeMs)}\n")
-        benchmarkResults.append("WebFlux: ${String.format("%.1f", webfluxResult.averageResponseTimeMs)}\n")
-
-        benchmarkResults.append("P95:\n")
-        benchmarkResults.append("MVC:     ${String.format("%.1f", mvcResult.p95ResponseTimeMs)}\n")
-        benchmarkResults.append("WebFlux: ${String.format("%.1f", webfluxResult.p95ResponseTimeMs)}\n")
-
-        benchmarkResults.append("P99:\n")
-        benchmarkResults.append("MVC:     ${String.format("%.1f", mvcResult.p99ResponseTimeMs)}\n")
-        benchmarkResults.append("WebFlux: ${String.format("%.1f", webfluxResult.p99ResponseTimeMs)}\n")
-
-        val responseTimeWinner =
-            if (webfluxResult.averageResponseTimeMs < mvcResult.averageResponseTimeMs) "WebFlux" else "MVC"
-        benchmarkResults.append("Faster Response: 🚀 $responseTimeWinner\n")
-
-        if (mvcResult.failedRequests > 0 || webfluxResult.failedRequests > 0) {
-            benchmarkResults.append("\n⚠️  Failed Requests:\n")
-            if (mvcResult.failedRequests > 0) benchmarkResults.append("MVC: ${mvcResult.failedRequests}\n")
-            if (webfluxResult.failedRequests > 0) benchmarkResults.append("WebFlux: ${webfluxResult.failedRequests}\n")
-        }
+        // Response time rows
+        val responseTimeWinner = if (webfluxResult.averageResponseTimeMs < mvcResult.averageResponseTimeMs) "WebFlux" else "MVC"
+        benchmarkResults.append(
+            "| **Avg Response Time (ms)** | ${String.format(
+                "%.1f",
+                mvcResult.averageResponseTimeMs,
+            )} | ${String.format("%.1f", webfluxResult.averageResponseTimeMs)} | 🚀 $responseTimeWinner |\n",
+        )
+        benchmarkResults.append(
+            "| **P95 Response Time (ms)** | ${String.format(
+                "%.1f",
+                mvcResult.p95ResponseTimeMs,
+            )} | ${String.format("%.1f", webfluxResult.p95ResponseTimeMs)} | - |\n",
+        )
+        benchmarkResults.append(
+            "| **P99 Response Time (ms)** | ${String.format(
+                "%.1f",
+                mvcResult.p99ResponseTimeMs,
+            )} | ${String.format("%.1f", webfluxResult.p99ResponseTimeMs)} | - |\n",
+        )
 
         benchmarkResults.append("\n")
+
+        // Failed requests section if any
+        if (mvcResult.failedRequests > 0 || webfluxResult.failedRequests > 0) {
+            benchmarkResults.append("### ⚠️ Failed Requests\n\n")
+            if (mvcResult.failedRequests > 0) benchmarkResults.append("- **MVC**: ${mvcResult.failedRequests} failures\n")
+            if (webfluxResult.failedRequests > 0) benchmarkResults.append("- **WebFlux**: ${webfluxResult.failedRequests} failures\n")
+            benchmarkResults.append("\n")
+        }
+
+        benchmarkResults.append("---\n\n")
     }
 
     private fun writeBenchmarkToMarkdown() {
@@ -688,17 +696,22 @@ class WebFrameworkBenchmark : CommandLineRunner {
             val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
 
             val content = StringBuilder()
-            content.append("=".repeat(80)).append("\n")
-            content.append("🚀 JVM Web Framework Benchmark\n")
-            content.append("=".repeat(80)).append("\n")
-            content.append("MVC App URL: http://localhost:8080/mvc/users\n")
-            content.append("WebFlux App URL: http://localhost:8081/webflux/users\n\n")
-            content.append("⏳ Waiting for applications to be ready...\n")
-            content.append("✅ WebFlux Application is ready\n")
-            content.append("✅ MVC Application is ready\n")
-            content.append("✅ Applications are ready. Cleaning up tables\n")
-            content.append("✅ Everything is ready. Starting benchmark...\n\n")
+            content.append("# 🚀 JVM Web Framework Benchmark\n\n")
 
+            content.append("## Configuration\n\n")
+            content.append("| Framework | URL |\n")
+            content.append("|-----------|-----|\n")
+            content.append("| MVC | `http://localhost:8080/mvc/users` |\n")
+            content.append("| WebFlux | `http://localhost:8081/webflux/users` |\n\n")
+
+            content.append("## Benchmark Execution Log\n\n")
+            content.append("- ⏳ Waiting for applications to be ready...\n")
+            content.append("- ✅ WebFlux Application is ready\n")
+            content.append("- ✅ MVC Application is ready\n")
+            content.append("- ✅ Applications are ready. Cleaning up tables\n")
+            content.append("- ✅ Everything is ready. Starting benchmark...\n\n")
+
+            content.append("# Benchmark Results\n\n")
             content.append(benchmarkResults.toString())
 
             benchmarkFile.writeText(content.toString())
