@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 jdk-version = "24"
 ktlint-gradle = "13.0.0"
 pinterest-ktlint = "1.7.1"
