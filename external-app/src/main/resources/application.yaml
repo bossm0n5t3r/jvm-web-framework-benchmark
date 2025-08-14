@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: external-app
+
+server:
+  port: 8082
+
+# Logging configuration
+logging:
+  level:
+    root: WARN
+    me.bossm0n5t3r: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
