@@ -125,9 +125,4 @@ class ReactiveExternalApiService(
      * Call metrics API
      */
     suspend fun callMetricsApi() = callExternalApiAndStore("/api/external/metrics")
-
-    /**
-     * Call payment API (POST request)
-     */
-    suspend fun callPaymentApi(paymentData: Map<String, Any>) = callExternalApiAndStore("/api/external/payment", HttpMethod.POST)
 }

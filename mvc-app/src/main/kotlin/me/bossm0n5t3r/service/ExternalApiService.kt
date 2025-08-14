@@ -117,9 +117,4 @@ class ExternalApiService(
      * Call metrics API
      */
     fun callMetricsApi() = callExternalApiAndStore("/api/external/metrics")
-
-    /**
-     * Call payment API (POST request)
-     */
-    fun callPaymentApi(paymentData: Map<String, Any>) = callExternalApiAndStore("/api/external/payment", HttpMethod.POST)
 }
