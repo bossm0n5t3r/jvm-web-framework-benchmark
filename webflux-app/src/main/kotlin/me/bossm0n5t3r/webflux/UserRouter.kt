@@ -25,6 +25,19 @@ open class UserRouter {
                     POST("") { request -> mono { userHandler.createUser(request) } }
                     PUT("/{id}") { request -> mono { userHandler.updateUser(request) } }
                     DELETE("/{id}") { request -> mono { userHandler.deleteUser(request) } }
+                    DELETE("") { request -> mono { userHandler.deleteAllUsers(request) } }
+
+                    // External API endpoints using coroutines
+                    POST("/external/health") { request -> mono { userHandler.callExternalHealthApi(request) } }
+                    POST("/external/user/{userId}") { request -> mono { userHandler.callExternalUserApi(request) } }
+                    POST("/external/weather") { request -> mono { userHandler.callExternalWeatherApi(request) } }
+                    POST("/external/stock/{symbol}") { request -> mono { userHandler.callExternalStockApi(request) } }
+                    POST("/external/order/{orderId}") { request -> mono { userHandler.callExternalOrderApi(request) } }
+                    POST("/external/metrics") { request -> mono { userHandler.callExternalMetricsApi(request) } }
+
+                    // Get stored external API responses
+                    GET("/external/responses") { request -> mono { userHandler.getAllExternalApiResponses(request) } }
+                    GET("/external/responses/endpoint") { request -> mono { userHandler.getExternalApiResponsesByEndpoint(request) } }
                 }
             }
         }

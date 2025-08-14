@@ -5,7 +5,10 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactive.awaitSingleOrNull
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.entity.ReactiveUser
+import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import me.bossm0n5t3r.repository.ReactiveUserRepository
+import me.bossm0n5t3r.service.ReactiveExternalApiService
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -20,6 +23,8 @@ import java.time.LocalDateTime
 @Component
 class UserHandler(
     private val userRepository: ReactiveUserRepository,
+    private val externalApiService: ReactiveExternalApiService,
+    private val externalApiResponseRepository: ReactiveExternalApiResponseRepository,
 ) {
     suspend fun getAllUsers(request: ServerRequest): ServerResponse =
         ServerResponse
@@ -132,5 +137,135 @@ class UserHandler(
         } catch (e: Exception) {
             ServerResponse.badRequest().build().awaitSingle()
         }
+    }
+
+    suspend fun deleteAllUsers(request: ServerRequest): ServerResponse =
+        try {
+            userRepository.deleteAll().awaitSingle()
+            ServerResponse.noContent().build().awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+
+    // =================================
+    // External API endpoints using coroutines
+    // =================================
+
+    /**
+     * Call external health API and store response in database using coroutines
+     */
+    suspend fun callExternalHealthApi(request: ServerRequest): ServerResponse =
+        try {
+            val response = externalApiService.callHealthApi()
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+
+    /**
+     * Call external user API and store response in database using coroutines
+     */
+    suspend fun callExternalUserApi(request: ServerRequest): ServerResponse {
+        val userId = request.pathVariable("userId")
+        return try {
+            val response = externalApiService.callUserApi(userId)
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+    }
+
+    /**
+     * Call external weather API and store response in database using coroutines
+     */
+    suspend fun callExternalWeatherApi(request: ServerRequest): ServerResponse {
+        val city = request.queryParam("city").orElse("Seoul")
+        return try {
+            val response = externalApiService.callWeatherApi(city)
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+    }
+
+    /**
+     * Call external stock API and store response in database using coroutines
+     */
+    suspend fun callExternalStockApi(request: ServerRequest): ServerResponse {
+        val symbol = request.pathVariable("symbol")
+        return try {
+            val response = externalApiService.callStockApi(symbol)
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+    }
+
+    /**
+     * Call external order API and store response in database using coroutines
+     */
+    suspend fun callExternalOrderApi(request: ServerRequest): ServerResponse {
+        val orderId = request.pathVariable("orderId")
+        return try {
+            val response = externalApiService.callOrderApi(orderId)
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+    }
+
+    /**
+     * Call external metrics API and store response in database using coroutines
+     */
+    suspend fun callExternalMetricsApi(request: ServerRequest): ServerResponse =
+        try {
+            val response = externalApiService.callMetricsApi()
+            ServerResponse
+                .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        } catch (e: Exception) {
+            ServerResponse.badRequest().build().awaitSingle()
+        }
+
+    /**
+     * Get all stored external API responses
+     */
+    suspend fun getAllExternalApiResponses(request: ServerRequest): ServerResponse =
+        ServerResponse
+            .ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyAndAwait(externalApiResponseRepository.findAllOrderByCreatedAtDesc().asFlow())
+
+    /**
+     * Get external API responses by endpoint
+     */
+    suspend fun getExternalApiResponsesByEndpoint(request: ServerRequest): ServerResponse {
+        val endpoint = request.queryParam("endpoint").orElse("")
+        return ServerResponse
+            .ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyAndAwait(externalApiResponseRepository.findByApiEndpointOrderByCreatedAtDesc(endpoint).asFlow())
     }
 }
