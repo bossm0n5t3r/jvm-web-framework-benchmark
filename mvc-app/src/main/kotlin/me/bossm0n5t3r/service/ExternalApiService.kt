@@ -1,120 +1,60 @@
 package me.bossm0n5t3r.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
-import java.time.LocalDateTime
+import java.util.UUID
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
  * Service for calling external APIs and storing responses in database
  */
+@OptIn(ExperimentalAtomicApi::class)
 @Service
 class ExternalApiService(
     private val restClient: RestClient,
-    private val objectMapper: ObjectMapper,
     private val externalApiResponseRepository: ExternalApiResponseRepository,
-    @Value("\${external.api.base-url:http://localhost:8082}")
-    private val externalApiBaseUrl: String,
 ) {
-    /**
-     * Call external API and store response in database using Virtual Threads
-     */
-    fun callExternalApiAndStore(
-        endpoint: String,
-        method: HttpMethod = HttpMethod.GET,
-    ): ExternalApiResponse {
-        val requestTimestamp = LocalDateTime.now()
-        val fullUrl = "$externalApiBaseUrl$endpoint"
-
-        return try {
-            // Make HTTP call - this will run on Virtual Thread
-            val response: ResponseEntity<String> =
-                when (method) {
-                    HttpMethod.GET ->
-                        restClient
-                            .get()
-                            .uri(fullUrl)
-                            .retrieve()
-                            .toEntity(String::class.java)
-                    HttpMethod.POST ->
-                        restClient
-                            .post()
-                            .uri(fullUrl)
-                            .retrieve()
-                            .toEntity(String::class.java)
-                    else -> throw IllegalArgumentException("Unsupported HTTP method: $method")
-                }
-
-            val responseTimestamp = LocalDateTime.now()
-
-            // Create and save external API response entity
-            val apiResponse =
-                ExternalApiResponse(
-                    apiEndpoint = endpoint,
-                    httpMethod = method.toString(),
-                    responseBody = response.body ?: "",
-                    statusCode = response.statusCode.value(),
-                    requestTimestamp = requestTimestamp,
-                    responseTimestamp = responseTimestamp,
-                    createdAt = LocalDateTime.now(),
-                )
-
-            externalApiResponseRepository.save(apiResponse)
-        } catch (e: Exception) {
-            // Save error response
-            val errorResponse =
-                ExternalApiResponse(
-                    apiEndpoint = endpoint,
-                    httpMethod = method.toString(),
-                    responseBody =
-                        objectMapper.writeValueAsString(
-                            mapOf(
-                                "error" to e.message,
-                                "timestamp" to LocalDateTime.now().toString(),
-                            ),
-                        ),
-                    statusCode = 500,
-                    requestTimestamp = requestTimestamp,
-                    responseTimestamp = LocalDateTime.now(),
-                    createdAt = LocalDateTime.now(),
-                )
-
-            externalApiResponseRepository.save(errorResponse)
-        }
+    companion object {
+        private const val EXTERNAL_API_BASE_URL = "http://localhost:8082"
+        private val CITIES = listOf("Seoul", "London", "New York", "Tokyo")
+        private val STOCK_SYMBOLS = listOf("AAPL", "GOOGL", "TSLA", "MSFT")
     }
 
     /**
      * Call health check API
      */
-    fun callHealthApi() = callExternalApiAndStore("/api/external/health")
+    fun callHealthApi() {
+        println("Calling health check API")
+    }
+
+    fun callExternalApi(): ExternalApiResponse {
+        val uuid = UUID.randomUUID().toString()
+        val userInfo = callExternalApi("/api/external/user/$uuid")
+        val weatherInfo = callExternalApi("/api/external/weather?city=${CITIES.random()}")
+        val stockInfo = callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
+        val orderInfo = callExternalApi("/api/external/order/$uuid")
+        val metricInfo = callExternalApi("/api/external/metrics")
+        val externalApiResponse =
+            ExternalApiResponse(
+                userInfo = userInfo.orEmpty(),
+                weatherInfo = weatherInfo.orEmpty(),
+                stockPriceInfo = stockInfo.orEmpty(),
+                orderStatusInfo = orderInfo.orEmpty(),
+                metricInfo = metricInfo.orEmpty(),
+            )
+        return externalApiResponseRepository.save(externalApiResponse)
+    }
 
     /**
-     * Call user API with specific ID
+     * Call external API and store response in database using Virtual Threads
      */
-    fun callUserApi(userId: String) = callExternalApiAndStore("/api/external/user/$userId")
-
-    /**
-     * Call weather API with specific city
-     */
-    fun callWeatherApi(city: String = "Seoul") = callExternalApiAndStore("/api/external/weather?city=$city")
-
-    /**
-     * Call stock API with specific symbol
-     */
-    fun callStockApi(symbol: String) = callExternalApiAndStore("/api/external/stock/$symbol")
-
-    /**
-     * Call order API with specific order ID
-     */
-    fun callOrderApi(orderId: String) = callExternalApiAndStore("/api/external/order/$orderId")
-
-    /**
-     * Call metrics API
-     */
-    fun callMetricsApi() = callExternalApiAndStore("/api/external/metrics")
+    private fun callExternalApi(endpoint: String): String? =
+        restClient
+            .get()
+            .uri("$EXTERNAL_API_BASE_URL$endpoint")
+            .retrieve()
+            .toEntity(String::class.java)
+            .body
 }

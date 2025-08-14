@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Lob
 import jakarta.persistence.Table
+import me.bossm0n5t3r.table.ExternalApiResponseTable
 import java.time.LocalDateTime
 
 /**
@@ -17,20 +18,24 @@ import java.time.LocalDateTime
 data class ExternalApiResponse(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-    @Column(nullable = false)
-    val apiEndpoint: String,
-    @Column(nullable = false)
-    val httpMethod: String,
+    override val id: Long = 0,
     @Lob
     @Column(nullable = false)
-    val responseBody: String,
+    override val userInfo: String,
+    @Lob
     @Column(nullable = false)
-    val statusCode: Int,
-    @Column(name = "request_timestamp")
-    val requestTimestamp: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "response_timestamp")
-    val responseTimestamp: LocalDateTime = LocalDateTime.now(),
+    override val weatherInfo: String,
+    @Lob
+    @Column(nullable = false)
+    override val stockPriceInfo: String,
+    @Lob
+    @Column(nullable = false)
+    override val orderStatusInfo: String,
+    @Lob
+    @Column(nullable = false)
+    override val metricInfo: String,
     @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-)
+    override val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "updated_at")
+    override val updatedAt: LocalDateTime = LocalDateTime.now(),
+) : ExternalApiResponseTable
