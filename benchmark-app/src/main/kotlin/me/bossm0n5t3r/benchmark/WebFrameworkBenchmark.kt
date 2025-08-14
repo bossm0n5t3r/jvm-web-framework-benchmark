@@ -27,6 +27,9 @@ import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.system.measureTimeMillis
 
 @SpringBootApplication
@@ -55,6 +58,7 @@ data class BenchmarkScenario(
     val run: () -> Unit,
 )
 
+@OptIn(ExperimentalAtomicApi::class)
 @Component
 class WebFrameworkBenchmark : CommandLineRunner {
     private val mvcBaseUrl = "http://localhost:8080/mvc/users"
@@ -204,26 +208,30 @@ class WebFrameworkBenchmark : CommandLineRunner {
         compareResults(mvcResults, webfluxResults, "🔍 GET All Users")
     }
 
+    private val counter = AtomicLong(0)
+
     private fun benchmarkCreateUser() {
         val requests = 50
         val concurrency = 5
 
         val mvcResults =
             runBenchmarkScenario("MVC", requests, concurrency) {
+                val uniqueId = counter.incrementAndFetch()
                 val userRequest =
                     UserRequest(
-                        "Test User ${System.currentTimeMillis()}",
-                        "test${System.currentTimeMillis()}@example.com",
+                        "Test User $uniqueId",
+                        "test$uniqueId@example.com",
                     )
                 performHttpPost(mvcBaseUrl, userRequest)
             }
 
         val webfluxResults =
             runBenchmarkScenario("WebFlux", requests, concurrency) {
+                val uniqueId = counter.incrementAndFetch()
                 val userRequest =
                     UserRequest(
-                        "Test User ${System.currentTimeMillis()}",
-                        "test${System.currentTimeMillis()}@example.com",
+                        "Test User $uniqueId",
+                        "test$uniqueId@example.com",
                     )
                 performReactivePost(webfluxBaseUrl, userRequest)
             }
