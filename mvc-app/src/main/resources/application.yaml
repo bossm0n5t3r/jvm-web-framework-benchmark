@@ -2,6 +2,11 @@ spring:
   application:
     name: mvc-app
 
+  # Enable Virtual Threads
+  threads:
+    virtual:
+      enabled: true
+
   # JPA Configuration for Spring MVC
   datasource:
     url: jdbc:postgresql://localhost:5432/benchmark

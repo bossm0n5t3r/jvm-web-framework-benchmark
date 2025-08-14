@@ -1,8 +1,11 @@
 package me.bossm0n5t3r.mvc
 
 import me.bossm0n5t3r.dto.UserRequest
+import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.entity.User
+import me.bossm0n5t3r.repository.ExternalApiResponseRepository
 import me.bossm0n5t3r.repository.UserRepository
+import me.bossm0n5t3r.service.ExternalApiService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -23,6 +26,8 @@ import java.time.LocalDateTime
 @RequestMapping("/mvc/users")
 class UserController(
     private val userRepository: UserRepository,
+    private val externalApiService: ExternalApiService,
+    private val externalApiResponseRepository: ExternalApiResponseRepository,
 ) {
     @GetMapping
     fun getAllUsers(): List<User> = userRepository.findAllOrderByCreatedAtDesc()
@@ -107,4 +112,84 @@ class UserController(
         userRepository.deleteAll()
         return ResponseEntity.noContent().build()
     }
+
+    // =================================
+    // External API endpoints using Virtual Threads
+    // =================================
+
+    /**
+     * Call external health API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/health")
+    fun callExternalHealthApi(): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callHealthApi()
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Call external user API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/user/{userId}")
+    fun callExternalUserApi(
+        @PathVariable userId: String,
+    ): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callUserApi(userId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Call external weather API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/weather")
+    fun callExternalWeatherApi(
+        @RequestParam(defaultValue = "Seoul") city: String,
+    ): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callWeatherApi(city)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Call external stock API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/stock/{symbol}")
+    fun callExternalStockApi(
+        @PathVariable symbol: String,
+    ): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callStockApi(symbol)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Call external order API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/order/{orderId}")
+    fun callExternalOrderApi(
+        @PathVariable orderId: String,
+    ): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callOrderApi(orderId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Call external metrics API and store response in database using Virtual Threads
+     */
+    @PostMapping("/external/metrics")
+    fun callExternalMetricsApi(): ResponseEntity<ExternalApiResponse> {
+        val response = externalApiService.callMetricsApi()
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    /**
+     * Get all stored external API responses
+     */
+    @GetMapping("/external/responses")
+    fun getAllExternalApiResponses(): List<ExternalApiResponse> = externalApiResponseRepository.findAllOrderByCreatedAtDesc()
+
+    /**
+     * Get external API responses by endpoint
+     */
+    @GetMapping("/external/responses/endpoint")
+    fun getExternalApiResponsesByEndpoint(
+        @RequestParam endpoint: String,
+    ): List<ExternalApiResponse> = externalApiResponseRepository.findByApiEndpointOrderByCreatedAtDesc(endpoint)
 }
