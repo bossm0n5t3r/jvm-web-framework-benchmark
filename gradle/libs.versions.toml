@@ -9,7 +9,6 @@ spring-dependency-management-version = "1.1.7"
 postgresql = "42.7.7"
 r2dbc-postgresql = "1.0.7.RELEASE"
 
-okhttp = "5.1.0"
 commons-math3 = "3.6.1"
 kotlinx-coroutines = "1.10.2"
 jackson = "2.19.2"
@@ -41,9 +40,6 @@ spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-
 spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-
-# HTTP Client dependencies
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 # JSON processing
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }

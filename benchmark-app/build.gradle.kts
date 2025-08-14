@@ -6,8 +6,8 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     // HTTP Client dependencies for making requests
+    implementation(libs.spring.boot.starter.web) // RestClient for blocking HTTP calls
     implementation(libs.spring.boot.starter.webflux) // WebClient for reactive HTTP calls
-    implementation(libs.okhttp) // OkHttp for blocking HTTP calls
 
     // JSON processing
     implementation(libs.jackson.module.kotlin)

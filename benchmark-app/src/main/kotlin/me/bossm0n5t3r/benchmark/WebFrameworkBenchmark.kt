@@ -8,15 +8,13 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.withPermit
 import me.bossm0n5t3r.dto.UserRequest
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
@@ -24,7 +22,6 @@ import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
 @SpringBootApplication
@@ -62,11 +59,9 @@ class WebFrameworkBenchmark : CommandLineRunner {
     private val benchmarkResults = StringBuilder()
 
     private val objectMapper = jacksonObjectMapper().registerKotlinModule()
-    private val okHttpClient =
-        OkHttpClient
-            .Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+    private val restClient =
+        RestClient
+            .builder()
             .build()
 
     private val webClient =
@@ -126,33 +121,27 @@ class WebFrameworkBenchmark : CommandLineRunner {
 
     private fun checkApplicationHealth(baseUrl: String): Boolean =
         try {
-            val request =
-                Request
-                    .Builder()
-                    .url(baseUrl)
+            val response =
+                restClient
                     .get()
-                    .build()
-
-            okHttpClient.newCall(request).execute().use { response ->
-                response.isSuccessful
-            }
+                    .uri(baseUrl)
+                    .retrieve()
+                    .toBodilessEntity()
+            response.statusCode.is2xxSuccessful
         } catch (_: Exception) {
             false
         }
 
     private fun runCleaningUpTables() {
         try {
-            val mvcRequest =
-                Request
-                    .Builder()
-                    .url(mvcBaseUrl)
+            val response =
+                restClient
                     .delete()
-                    .build()
-
-            okHttpClient.newCall(mvcRequest).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw RuntimeException("Failed to cleanup tables: HTTP ${response.code}: ${response.message}")
-                }
+                    .uri(mvcBaseUrl)
+                    .retrieve()
+                    .toBodilessEntity()
+            if (!response.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Failed to cleanup tables: HTTP ${response.statusCode}")
             }
         } catch (e: Exception) {
             println("Failed to cleanup tables. Ignoring...")
@@ -416,43 +405,26 @@ class WebFrameworkBenchmark : CommandLineRunner {
 
     private fun performHttpGet(url: String): Long =
         measureTimeMillis {
-            val request =
-                Request
-                    .Builder()
-                    .url(url)
+            val response =
+                restClient
                     .get()
-                    .build()
-
-            okHttpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw RuntimeException("HTTP ${response.code}: ${response.message}")
-                }
-                response.body?.string() // Consume response
-            }
+                    .uri(url)
+                    .retrieve()
+                    .body(String::class.java)
+            // Response is consumed, no need to check status as retrieve() throws on error
         }
 
     private fun executePost(
         url: String,
         userRequest: UserRequest,
-    ): String {
-        val json = objectMapper.writeValueAsString(userRequest)
-        val requestBody = json.toRequestBody("application/json".toMediaType())
-
-        val request =
-            Request
-                .Builder()
-                .url(url)
-                .post(requestBody)
-                .build()
-
-        okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                val errorBody = response.body?.string()
-                throw RuntimeException("HTTP ${response.code}: ${response.message} - $errorBody")
-            }
-            return response.body?.string() ?: throw IllegalStateException("Response body was null")
-        }
-    }
+    ): String =
+        restClient
+            .post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(userRequest)
+            .retrieve()
+            .body(String::class.java) ?: throw IllegalStateException("Response body was null")
 
     private fun performHttpPost(
         url: String,
@@ -467,38 +439,33 @@ class WebFrameworkBenchmark : CommandLineRunner {
         userRequest: UserRequest,
     ): Long =
         measureTimeMillis {
-            val json = objectMapper.writeValueAsString(userRequest)
-            val requestBody = json.toRequestBody("application/json".toMediaType())
-
-            val request =
-                Request
-                    .Builder()
-                    .url(url)
-                    .put(requestBody)
-                    .build()
-
-            okHttpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw RuntimeException("HTTP ${response.code}: ${response.message}")
-                }
-                response.body?.string() // Consume response
-            }
+            val response =
+                restClient
+                    .put()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(userRequest)
+                    .retrieve()
+                    .body(String::class.java)
+            // Response is consumed, no need to check status as retrieve() throws on error
         }
 
     private fun performHttpDelete(url: String): Long =
         measureTimeMillis {
-            val request =
-                Request
-                    .Builder()
-                    .url(url)
-                    .delete()
-                    .build()
-
-            okHttpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful && response.code != 404) { // 404 is acceptable for delete
-                    throw RuntimeException("HTTP ${response.code}: ${response.message}")
+            try {
+                val response =
+                    restClient
+                        .delete()
+                        .uri(url)
+                        .retrieve()
+                        .body(String::class.java)
+                // Response is consumed, no need to check status as retrieve() throws on error
+            } catch (e: Exception) {
+                // Check if it's a 404 (Not Found) which is acceptable for delete operations
+                if (e.message?.contains("404") != true) {
+                    throw e
                 }
-                response.body?.string() // Consume response
+                // 404 is acceptable for delete, so we ignore it
             }
         }
 
