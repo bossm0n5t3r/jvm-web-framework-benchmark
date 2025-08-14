@@ -1,217 +1,153 @@
-================================================================================
-🚀 JVM Web Framework Benchmark
-================================================================================
-MVC App URL: http://localhost:8080/mvc/users
-WebFlux App URL: http://localhost:8081/webflux/users
+# 🚀 JVM Web Framework Benchmark
 
-⏳ Waiting for applications to be ready...
-✅ WebFlux Application is ready
-✅ MVC Application is ready
-✅ Applications are ready. Cleaning up tables
-✅ Everything is ready. Starting benchmark...
+## Configuration
 
-============================================================
-🔍 GET All Users
-============================================================
-📊 Testing MVC - 100 requests, 10 concurrent
-📊 Testing WebFlux - 100 requests, 10 concurrent
-📈 Results Comparison:
+| Framework | URL |
+|-----------|-----|
+| MVC | `http://localhost:8080/mvc/users` |
+| WebFlux | `http://localhost:8081/webflux/users` |
 
-Success Rate:
-MVC:     100.0% (100/100)
-WebFlux: 100.0% (100/100)
+## Benchmark Execution Log
 
-Throughput (requests/sec):
-MVC:     400.0
-WebFlux: 456.6
-Winner: 🏆 WebFlux (12.4% faster)
+- ⏳ Waiting for applications to be ready...
+- ✅ WebFlux Application is ready
+- ✅ MVC Application is ready
+- ✅ Applications are ready. Cleaning up tables
+- ✅ Everything is ready. Starting benchmark...
 
-Response Times (ms):
-Average:
-MVC:     2.4
-WebFlux: 14.8
-P95:
-MVC:     3.0
-WebFlux: 92.0
-P99:
-MVC:     4.0
-WebFlux: 161.3
-Faster Response: 🚀 MVC
+# Benchmark Results
 
-============================================================
-➕ CREATE User
-============================================================
-📊 Testing MVC - 50 requests, 5 concurrent
-📊 Testing WebFlux - 50 requests, 5 concurrent
-📈 Results Comparison:
+## 🔍 GET All Users
 
-Success Rate:
-MVC:     100.0% (50/50)
-WebFlux: 64.0% (32/50)
+**Test Configuration:**
+- 📊 MVC: 100 requests, 10 concurrent
+- 📊 WebFlux: 100 requests, 10 concurrent
 
-Throughput (requests/sec):
-MVC:     129.9
-WebFlux: 248.1
-Winner: 🏆 WebFlux (47.6% faster)
+### 📈 Results Comparison
 
-Response Times (ms):
-Average:
-MVC:     7.7
-WebFlux: 9.6
-P95:
-MVC:     9.4
-WebFlux: 75.4
-P99:
-MVC:     91.0
-WebFlux: 76.0
-Faster Response: 🚀 MVC
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (100/100) | 100.0% (100/100) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 328.9 | 793.7 | 🏆 WebFlux (+58.6%) |
+| **Avg Response Time (ms)** | 2.9 | 10.5 | 🚀 MVC |
+| **P95 Response Time (ms)** | 4.0 | 51.6 | - |
+| **P99 Response Time (ms)** | 4.7 | 62.0 | - |
 
-⚠️  Failed Requests:
-WebFlux: 18
+---
 
-============================================================
-🔍 GET User by ID
-============================================================
-📊 Testing MVC - 100 requests, 10 concurrent
-📊 Testing WebFlux - 100 requests, 10 concurrent
-📈 Results Comparison:
+## ➕ CREATE User
 
-Success Rate:
-MVC:     100.0% (100/100)
-WebFlux: 100.0% (100/100)
+**Test Configuration:**
+- 📊 MVC: 50 requests, 5 concurrent
+- 📊 WebFlux: 50 requests, 5 concurrent
 
-Throughput (requests/sec):
-MVC:     243.3
-WebFlux: 1515.2
-Winner: 🏆 WebFlux (83.9% faster)
+### 📈 Results Comparison
 
-Response Times (ms):
-Average:
-MVC:     4.1
-WebFlux: 6.2
-P95:
-MVC:     6.9
-WebFlux: 25.0
-P99:
-MVC:     13.0
-WebFlux: 27.0
-Faster Response: 🚀 MVC
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (50/50) | 100.0% (50/50) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 126.9 | 420.2 | 🏆 WebFlux (+69.8%) |
+| **Avg Response Time (ms)** | 7.8 | 11.5 | 🚀 MVC |
+| **P95 Response Time (ms)** | 10.2 | 68.2 | - |
+| **P99 Response Time (ms)** | 86.0 | 69.0 | - |
 
-============================================================
-📝 UPDATE User
-============================================================
-📊 Testing MVC - 50 requests, 5 concurrent
-📊 Testing WebFlux - 50 requests, 5 concurrent
-📈 Results Comparison:
+---
 
-Success Rate:
-MVC:     100.0% (50/50)
-WebFlux: 100.0% (50/50)
+## 🔍 GET User by ID
 
-Throughput (requests/sec):
-MVC:     210.1
-WebFlux: 595.2
-Winner: 🏆 WebFlux (64.7% faster)
+**Test Configuration:**
+- 📊 MVC: 100 requests, 10 concurrent
+- 📊 WebFlux: 100 requests, 10 concurrent
 
-Response Times (ms):
-Average:
-MVC:     4.7
-WebFlux: 8.3
-P95:
-MVC:     7.9
-WebFlux: 23.0
-P99:
-MVC:     10.0
-WebFlux: 23.0
-Faster Response: 🚀 MVC
+### 📈 Results Comparison
 
-============================================================
-🗑️ DELETE User
-============================================================
-📊 Testing MVC - 10 requests, 5 concurrent
-📊 Testing WebFlux - 10 requests, 5 concurrent
-📈 Results Comparison:
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (100/100) | 100.0% (100/100) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 230.4 | 1470.6 | 🏆 WebFlux (+84.3%) |
+| **Avg Response Time (ms)** | 4.3 | 6.5 | 🚀 MVC |
+| **P95 Response Time (ms)** | 7.0 | 26.0 | - |
+| **P99 Response Time (ms)** | 11.7 | 27.0 | - |
 
-Success Rate:
-MVC:     100.0% (10/10)
-WebFlux: 0.0% (0/10)
+---
 
-Throughput (requests/sec):
-MVC:     103.1
-WebFlux: 0.0
-Winner: 🏆 MVC (100.0% faster)
+## 📝 UPDATE User
 
-Response Times (ms):
-Average:
-MVC:     9.6
-WebFlux: NaN
-P95:
-MVC:     44.0
-WebFlux: NaN
-P99:
-MVC:     44.0
-WebFlux: NaN
-Faster Response: 🚀 MVC
+**Test Configuration:**
+- 📊 MVC: 50 requests, 5 concurrent
+- 📊 WebFlux: 50 requests, 5 concurrent
 
-⚠️  Failed Requests:
-WebFlux: 10
+### 📈 Results Comparison
 
-============================================================
-🔎 SEARCH Users by Name
-============================================================
-📊 Testing MVC - 100 requests, 10 concurrent
-📊 Testing WebFlux - 100 requests, 10 concurrent
-📈 Results Comparison:
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (50/50) | 100.0% (50/50) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 192.3 | 735.3 | 🏆 WebFlux (+73.8%) |
+| **Avg Response Time (ms)** | 5.2 | 6.7 | 🚀 MVC |
+| **P95 Response Time (ms)** | 7.2 | 16.0 | - |
+| **P99 Response Time (ms)** | 11.0 | 17.0 | - |
 
-Success Rate:
-MVC:     100.0% (100/100)
-WebFlux: 0.0% (0/100)
+---
 
-Throughput (requests/sec):
-MVC:     331.1
-WebFlux: 0.0
-Winner: 🏆 MVC (100.0% faster)
+## 🗑️ DELETE User
 
-Response Times (ms):
-Average:
-MVC:     3.0
-WebFlux: NaN
-P95:
-MVC:     4.9
-WebFlux: NaN
-P99:
-MVC:     10.9
-WebFlux: NaN
-Faster Response: 🚀 MVC
+**Test Configuration:**
+- 📊 MVC: 10 requests, 5 concurrent
+- 📊 WebFlux: 10 requests, 5 concurrent
 
-⚠️  Failed Requests:
-WebFlux: 100
+### 📈 Results Comparison
 
-============================================================
-💥 HIGH LOAD Test
-============================================================
-📊 Testing MVC - 500 requests, 10 concurrent
-📊 Testing WebFlux - 500 requests, 10 concurrent
-📈 Results Comparison:
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (10/10) | 0.0% (0/10) | 🏆 MVC |
+| **Throughput (req/sec)** | 81.3 | 0.0 | 🏆 MVC (+100.0%) |
+| **Avg Response Time (ms)** | 12.3 | 0.0 | 🚀 WebFlux |
+| **P95 Response Time (ms)** | 52.0 | 0.0 | - |
+| **P99 Response Time (ms)** | 52.0 | 0.0 | - |
 
-Success Rate:
-MVC:     100.0% (500/500)
-WebFlux: 100.0% (500/500)
+### ⚠️ Failed Requests
 
-Throughput (requests/sec):
-MVC:     355.1
-WebFlux: 632.1
-Winner: 🏆 WebFlux (43.8% faster)
+- **WebFlux**: 10 failures
 
-Response Times (ms):
-Average:
-MVC:     2.8
-WebFlux: 75.7
-P95:
-MVC:     4.0
-WebFlux: 99.0
-P99:
-MVC:     6.0
-WebFlux: 109.0
-Faster Response: 🚀 MVC
+---
+
+## 🔎 SEARCH Users by Name
+
+**Test Configuration:**
+- 📊 MVC: 100 requests, 10 concurrent
+- 📊 WebFlux: 100 requests, 10 concurrent
+
+### 📈 Results Comparison
+
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (100/100) | 0.0% (0/100) | 🏆 MVC |
+| **Throughput (req/sec)** | 325.7 | 0.0 | 🏆 MVC (+100.0%) |
+| **Avg Response Time (ms)** | 3.0 | 0.0 | 🚀 WebFlux |
+| **P95 Response Time (ms)** | 5.0 | 0.0 | - |
+| **P99 Response Time (ms)** | 9.7 | 0.0 | - |
+
+### ⚠️ Failed Requests
+
+- **WebFlux**: 100 failures
+
+---
+
+## 💥 HIGH LOAD Test
+
+**Test Configuration:**
+- 📊 MVC: 500 requests, 10 concurrent
+- 📊 WebFlux: 500 requests, 10 concurrent
+
+### 📈 Results Comparison
+
+| Metric | MVC | WebFlux | Winner |
+|--------|-----|---------|--------|
+| **Success Rate** | 100.0% (500/500) | 100.0% (500/500) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 356.1 | 1116.1 | 🏆 WebFlux (+68.1%) |
+| **Avg Response Time (ms)** | 2.8 | 42.2 | 🚀 MVC |
+| **P95 Response Time (ms)** | 4.0 | 52.0 | - |
+| **P99 Response Time (ms)** | 5.7 | 56.0 | - |
+
+---
 
