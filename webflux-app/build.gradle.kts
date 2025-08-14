@@ -9,6 +9,10 @@ dependencies {
     // Database dependencies
     runtimeOnly(libs.r2dbc.postgresql)
 
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactor)
+
     implementation(libs.spring.boot.starter)
     implementation(libs.kotlin.reflect)
     testImplementation(libs.spring.boot.starter.test)

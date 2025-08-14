@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.webflux
 
+import kotlinx.coroutines.reactor.mono
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -17,13 +18,13 @@ open class UserRouter {
         router {
             "/webflux/users".nest {
                 accept(MediaType.APPLICATION_JSON).nest {
-                    GET("", userHandler::getAllUsers)
-                    GET("/search", userHandler::searchUsersByName)
-                    GET("/{id}", userHandler::getUserById)
-                    GET("/email/{email}", userHandler::getUserByEmail)
-                    POST("", userHandler::createUser)
-                    PUT("/{id}", userHandler::updateUser)
-                    DELETE("/{id}", userHandler::deleteUser)
+                    GET("") { request -> mono { userHandler.getAllUsers(request) } }
+                    GET("/search") { request -> mono { userHandler.searchUsersByName(request) } }
+                    GET("/{id}") { request -> mono { userHandler.getUserById(request) } }
+                    GET("/email/{email}") { request -> mono { userHandler.getUserByEmail(request) } }
+                    POST("") { request -> mono { userHandler.createUser(request) } }
+                    PUT("/{id}") { request -> mono { userHandler.updateUser(request) } }
+                    DELETE("/{id}") { request -> mono { userHandler.deleteUser(request) } }
                 }
             }
         }
