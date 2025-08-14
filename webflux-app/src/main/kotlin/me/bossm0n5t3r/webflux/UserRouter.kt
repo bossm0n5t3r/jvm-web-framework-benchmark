@@ -18,8 +18,8 @@ open class UserRouter {
             "/webflux/users".nest {
                 accept(MediaType.APPLICATION_JSON).nest {
                     GET("", userHandler::getAllUsers)
-                    GET("/{id}", userHandler::getUserById)
                     GET("/search", userHandler::searchUsersByName)
+                    GET("/{id}", userHandler::getUserById)
                     GET("/email/{email}", userHandler::getUserByEmail)
                     POST("", userHandler::createUser)
                     PUT("/{id}", userHandler::updateUser)
