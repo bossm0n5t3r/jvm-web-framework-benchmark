@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -527,10 +528,10 @@ class WebFrameworkBenchmark : CommandLineRunner {
                 .delete()
                 .uri(url)
                 .retrieve()
-                .bodyToMono<String>()
+                .bodyToMono<Unit>()
                 .timeout(Duration.ofSeconds(30))
-                .onErrorResume { Mono.just("") } // Handle 404 gracefully
-                .awaitSingle()
+                .onErrorResume { Mono.empty() } // Handle 404 gracefully
+                .awaitSingleOrNull()
         }
 
     private fun compareResults(
