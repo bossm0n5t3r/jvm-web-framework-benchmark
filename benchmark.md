@@ -28,10 +28,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (100/100) | 100.0% (100/100) | 🏆 WebFlux |
-| **Throughput (req/sec)** | 328.9 | 793.7 | 🏆 WebFlux (+58.6%) |
-| **Avg Response Time (ms)** | 2.9 | 10.5 | 🚀 MVC |
-| **P95 Response Time (ms)** | 4.0 | 51.6 | - |
-| **P99 Response Time (ms)** | 4.7 | 62.0 | - |
+| **Throughput (req/sec)** | 347.2 | 793.7 | 🏆 WebFlux (+56.3%) |
+| **Avg Response Time (ms)** | 2.8 | 10.6 | 🚀 MVC |
+| **P95 Response Time (ms)** | 4.0 | 55.6 | - |
+| **P99 Response Time (ms)** | 4.7 | 65.6 | - |
 
 ---
 
@@ -46,10 +46,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (50/50) | 100.0% (50/50) | 🏆 WebFlux |
-| **Throughput (req/sec)** | 126.9 | 420.2 | 🏆 WebFlux (+69.8%) |
-| **Avg Response Time (ms)** | 7.8 | 11.5 | 🚀 MVC |
-| **P95 Response Time (ms)** | 10.2 | 68.2 | - |
-| **P99 Response Time (ms)** | 86.0 | 69.0 | - |
+| **Throughput (req/sec)** | 131.6 | 442.5 | 🏆 WebFlux (+70.3%) |
+| **Avg Response Time (ms)** | 7.6 | 11.0 | 🚀 MVC |
+| **P95 Response Time (ms)** | 9.2 | 64.0 | - |
+| **P99 Response Time (ms)** | 82.0 | 65.0 | - |
 
 ---
 
@@ -64,10 +64,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (100/100) | 100.0% (100/100) | 🏆 WebFlux |
-| **Throughput (req/sec)** | 230.4 | 1470.6 | 🏆 WebFlux (+84.3%) |
-| **Avg Response Time (ms)** | 4.3 | 6.5 | 🚀 MVC |
-| **P95 Response Time (ms)** | 7.0 | 26.0 | - |
-| **P99 Response Time (ms)** | 11.7 | 27.0 | - |
+| **Throughput (req/sec)** | 237.5 | 1234.6 | 🏆 WebFlux (+80.8%) |
+| **Avg Response Time (ms)** | 4.2 | 7.6 | 🚀 MVC |
+| **P95 Response Time (ms)** | 6.0 | 25.0 | - |
+| **P99 Response Time (ms)** | 12.3 | 26.0 | - |
 
 ---
 
@@ -82,10 +82,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (50/50) | 100.0% (50/50) | 🏆 WebFlux |
-| **Throughput (req/sec)** | 192.3 | 735.3 | 🏆 WebFlux (+73.8%) |
-| **Avg Response Time (ms)** | 5.2 | 6.7 | 🚀 MVC |
-| **P95 Response Time (ms)** | 7.2 | 16.0 | - |
-| **P99 Response Time (ms)** | 11.0 | 17.0 | - |
+| **Throughput (req/sec)** | 143.7 | 649.4 | 🏆 WebFlux (+77.9%) |
+| **Avg Response Time (ms)** | 6.9 | 7.5 | 🚀 MVC |
+| **P95 Response Time (ms)** | 11.2 | 23.0 | - |
+| **P99 Response Time (ms)** | 18.0 | 23.0 | - |
 
 ---
 
@@ -99,15 +99,11 @@
 
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
-| **Success Rate** | 100.0% (10/10) | 0.0% (0/10) | 🏆 MVC |
-| **Throughput (req/sec)** | 81.3 | 0.0 | 🏆 MVC (+100.0%) |
-| **Avg Response Time (ms)** | 12.3 | 0.0 | 🚀 WebFlux |
-| **P95 Response Time (ms)** | 52.0 | 0.0 | - |
-| **P99 Response Time (ms)** | 52.0 | 0.0 | - |
-
-### ⚠️ Failed Requests
-
-- **WebFlux**: 10 failures
+| **Success Rate** | 100.0% (10/10) | 100.0% (10/10) | 🏆 WebFlux |
+| **Throughput (req/sec)** | 89.3 | 243.9 | 🏆 WebFlux (+63.4%) |
+| **Avg Response Time (ms)** | 11.2 | 8.0 | 🚀 WebFlux |
+| **P95 Response Time (ms)** | 52.0 | 16.0 | - |
+| **P99 Response Time (ms)** | 52.0 | 16.0 | - |
 
 ---
 
@@ -122,10 +118,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (100/100) | 0.0% (0/100) | 🏆 MVC |
-| **Throughput (req/sec)** | 325.7 | 0.0 | 🏆 MVC (+100.0%) |
-| **Avg Response Time (ms)** | 3.0 | 0.0 | 🚀 WebFlux |
-| **P95 Response Time (ms)** | 5.0 | 0.0 | - |
-| **P99 Response Time (ms)** | 9.7 | 0.0 | - |
+| **Throughput (req/sec)** | 293.3 | 0.0 | 🏆 MVC (+100.0%) |
+| **Avg Response Time (ms)** | 3.4 | 0.0 | 🚀 WebFlux |
+| **P95 Response Time (ms)** | 6.0 | 0.0 | - |
+| **P99 Response Time (ms)** | 11.0 | 0.0 | - |
 
 ### ⚠️ Failed Requests
 
@@ -144,10 +140,10 @@
 | Metric | MVC | WebFlux | Winner |
 |--------|-----|---------|--------|
 | **Success Rate** | 100.0% (500/500) | 100.0% (500/500) | 🏆 WebFlux |
-| **Throughput (req/sec)** | 356.1 | 1116.1 | 🏆 WebFlux (+68.1%) |
-| **Avg Response Time (ms)** | 2.8 | 42.2 | 🚀 MVC |
-| **P95 Response Time (ms)** | 4.0 | 52.0 | - |
-| **P99 Response Time (ms)** | 5.7 | 56.0 | - |
+| **Throughput (req/sec)** | 382.6 | 1126.1 | 🏆 WebFlux (+66.0%) |
+| **Avg Response Time (ms)** | 2.6 | 41.8 | 🚀 MVC |
+| **P95 Response Time (ms)** | 4.6 | 52.0 | - |
+| **P99 Response Time (ms)** | 6.0 | 62.0 | - |
 
 ---
 
