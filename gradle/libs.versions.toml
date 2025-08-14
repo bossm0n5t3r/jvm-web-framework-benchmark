@@ -9,8 +9,8 @@ spring-dependency-management-version = "1.1.7"
 postgresql = "42.7.7"
 r2dbc-postgresql = "1.0.7.RELEASE"
 
-commons-math3 = "3.6.1"
 kotlinx-coroutines = "1.10.2"
+kotlinx-dataframe = "1.0.0-Beta2"
 jackson = "2.19.2"
 
 [plugins]
@@ -45,7 +45,7 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 
 # Math and statistics
-commons-math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons-math3" }
+kotlinx-dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "kotlinx-dataframe" }
 
 # Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
 
     // Statistics and metrics
-    implementation(libs.commons.math3)
+    implementation(libs.kotlinx.dataframe)
 
     // Coroutines for async operations
     implementation(libs.kotlinx.coroutines.core)

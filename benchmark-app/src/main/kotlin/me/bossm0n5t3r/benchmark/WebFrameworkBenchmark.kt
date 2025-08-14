@@ -6,9 +6,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import me.bossm0n5t3r.dto.UserRequest
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
+import org.jetbrains.kotlinx.dataframe.api.cast
+import org.jetbrains.kotlinx.dataframe.api.dataFrameOf
+import org.jetbrains.kotlinx.dataframe.api.describe
+import org.jetbrains.kotlinx.dataframe.api.percentile
+import org.jetbrains.kotlinx.dataframe.api.percentileOrNull
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -362,46 +367,73 @@ class WebFrameworkBenchmark : CommandLineRunner {
         runBlocking {
             println("📊 Testing $framework - $requests requests, $concurrency concurrent")
 
-            val stats = DescriptiveStatistics()
+            val times = mutableListOf<Long>()
             val errors = mutableListOf<Exception>()
-            val semaphore = kotlinx.coroutines.sync.Semaphore(concurrency)
+            val semaphore = Semaphore(concurrency)
 
             val totalTime =
                 measureTimeMillis {
-                    val jobs =
-                        (1..requests).map {
+                    (1..requests)
+                        .map {
                             async {
                                 semaphore.withPermit {
                                     try {
-                                        val responseTime = operation()
-                                        synchronized(stats) {
-                                            stats.addValue(responseTime.toDouble())
-                                        }
+                                        times += operation()
                                     } catch (e: Exception) {
-                                        synchronized(errors) {
-                                            errors.add(e)
-                                        }
+                                        errors += e
                                     }
                                 }
                             }
-                        }
-                    jobs.awaitAll()
+                        }.awaitAll()
                 }
 
-            BenchmarkResult(
+            createBenchmarkResultFromRawData(framework, requests, times, errors.size, totalTime)
+        }
+
+    private fun createBenchmarkResultFromRawData(
+        framework: String,
+        totalRequests: Int,
+        times: List<Long>,
+        failedRequests: Int,
+        totalTimeMs: Long,
+    ): BenchmarkResult {
+        if (times.isEmpty()) {
+            return BenchmarkResult(
                 framework = framework,
-                totalRequests = requests,
-                successfulRequests = stats.n.toInt(),
-                failedRequests = errors.size,
-                totalTimeMs = totalTime,
-                averageResponseTimeMs = stats.mean,
-                minResponseTimeMs = stats.min,
-                maxResponseTimeMs = stats.max,
-                p95ResponseTimeMs = stats.getPercentile(95.0),
-                p99ResponseTimeMs = stats.getPercentile(99.0),
-                throughputRps = (stats.n / (totalTime / 1000.0)),
+                totalRequests = totalRequests,
+                successfulRequests = 0,
+                failedRequests = failedRequests,
+                totalTimeMs = totalTimeMs,
+                averageResponseTimeMs = 0.0,
+                minResponseTimeMs = 0.0,
+                maxResponseTimeMs = 0.0,
+                p95ResponseTimeMs = 0.0,
+                p99ResponseTimeMs = 0.0,
+                throughputRps = 0.0,
             )
         }
+
+        val df = dataFrameOf("time" to times)
+        val timeColumn = df["time"].cast<Long>()
+        val stats = timeColumn.describe()
+        val p95 = timeColumn.percentileOrNull(95.0) ?: 0.0
+        val p99 = timeColumn.percentileOrNull(99.0) ?: 0.0
+        val throughput = if (totalTimeMs > 0) times.size / (totalTimeMs / 1000.0) else 0.0
+
+        return BenchmarkResult(
+            framework = framework,
+            totalRequests = totalRequests,
+            successfulRequests = times.size,
+            failedRequests = failedRequests,
+            totalTimeMs = totalTimeMs,
+            averageResponseTimeMs = stats["mean"][0] as Double,
+            minResponseTimeMs = (stats["min"][0] as? Number)?.toDouble() ?: 0.0,
+            maxResponseTimeMs = (stats["max"][0] as? Number)?.toDouble() ?: 0.0,
+            p95ResponseTimeMs = p95,
+            p99ResponseTimeMs = p99,
+            throughputRps = throughput,
+        )
+    }
 
     private fun performHttpGet(url: String): Long =
         measureTimeMillis {
