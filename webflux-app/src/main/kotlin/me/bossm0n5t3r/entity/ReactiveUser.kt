@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.entity
 
+import me.bossm0n5t3r.table.UserTable
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -11,13 +12,13 @@ import java.time.LocalDateTime
 @Table("users")
 data class ReactiveUser(
     @Id
-    val id: Long = 0,
+    override val id: Long = 0,
     @Column("name")
-    val name: String,
+    override val name: String,
     @Column("email")
-    val email: String,
+    override val email: String,
     @Column("created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    override val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-)
+    override val updatedAt: LocalDateTime = LocalDateTime.now(),
+) : UserTable

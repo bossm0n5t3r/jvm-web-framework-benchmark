@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import me.bossm0n5t3r.table.UserTable
 import java.time.LocalDateTime
 
 /**
@@ -16,13 +17,13 @@ import java.time.LocalDateTime
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    override val id: Long = 0,
     @Column(nullable = false)
-    val name: String,
+    override val name: String,
     @Column(nullable = false, unique = true)
-    val email: String,
+    override val email: String,
     @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    override val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "updated_at")
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-)
+    override val updatedAt: LocalDateTime = LocalDateTime.now(),
+) : UserTable
