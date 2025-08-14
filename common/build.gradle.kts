@@ -6,3 +6,7 @@ dependencies {
 tasks.bootRun {
     enabled = false
 }
+
+tasks.bootJar {
+    enabled = false
+}
