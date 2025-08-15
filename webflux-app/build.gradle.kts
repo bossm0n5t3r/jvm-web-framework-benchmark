@@ -16,4 +16,7 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.kotlin.reflect)
     testImplementation(libs.spring.boot.starter.test)
+
+    // Netty resolver for macOS
+    implementation("io.netty:netty-resolver-dns-native-macos:${libs.versions.netty.resolver.dns.native.macos.version.get()}:osx-aarch_64")
 }
