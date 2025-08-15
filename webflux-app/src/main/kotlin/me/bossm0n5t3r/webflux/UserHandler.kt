@@ -2,13 +2,9 @@ package me.bossm0n5t3r.webflux
 
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
-import kotlinx.coroutines.reactive.awaitSingleOrNull
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.entity.ReactiveUser
-import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import me.bossm0n5t3r.repository.ReactiveUserRepository
-import me.bossm0n5t3r.service.ReactiveExternalApiService
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
