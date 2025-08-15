@@ -48,7 +48,7 @@ class ExternalApiService(
     }
 
     /**
-     * Call external API and store response in database using Virtual Threads
+     * Call external API using Virtual Threads
      */
     private fun callExternalApi(endpoint: String): String? =
         restClient
