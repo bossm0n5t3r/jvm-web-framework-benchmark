@@ -2,10 +2,9 @@ package me.bossm0n5t3r.mvc
 
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.service.ExternalApiService
-import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -21,10 +20,9 @@ class ExternalApiController(
     private val externalApiService: ExternalApiService,
 ) {
     /**
-     * Call external health API and store response in database using Virtual Threads
+     * Call external health API using Virtual Threads
      */
-    @PostMapping("/health")
-    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/health")
     fun callExternalHealthApi() {
         externalApiService.callHealthApi()
     }
