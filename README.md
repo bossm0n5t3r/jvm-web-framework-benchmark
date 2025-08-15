@@ -7,28 +7,66 @@
 ```
 jvm-web-framework-benchmark/
 ├── common/                               # 공통 모듈
-│   └── src/main/kotlin/me/bossm0n5t3r/dto/
-│       └── UserRequest.kt                # 공통 DTO
-├── mvc-app/                              # Spring MVC 애플리케이션
+│   └── src/main/kotlin/me/bossm0n5t3r/
+│       ├── dto/                          # 공통 DTO 클래스들
+│       │   ├── User.kt                   # 사용자 DTO
+│       │   ├── UserRequest.kt            # 사용자 요청 DTO
+│       │   ├── Weather.kt                # 날씨 DTO
+│       │   ├── StockPrice.kt             # 주식 가격 DTO
+│       │   ├── OrderStatus.kt            # 주문 상태 DTO
+│       │   └── Metric.kt                 # 메트릭 DTO
+│       └── table/                        # 데이터베이스 테이블 설정
+│           ├── UserTable.kt              # 사용자 테이블
+│           └── ExternalApiResponseTable.kt # 외부 API 응답 테이블
+├── mvc-app/                              # Spring MVC 애플리케이션 (포트: 8080)
 │   └── src/main/kotlin/me/bossm0n5t3r/
 │       ├── MvcApplication.kt             # Spring MVC 메인 애플리케이션
-│       ├── entity/User.kt                # JPA 엔티티
-│       ├── config/JpaConfig.kt           # JPA 설정
-│       ├── mvc/UserController.kt         # Spring MVC REST 컨트롤러
-│       └── repository/jpa/UserRepository.kt # JPA 리포지토리
-├── webflux-app/                          # Spring WebFlux 애플리케이션
+│       ├── entity/                       # JPA 엔티티
+│       │   ├── User.kt                   # 사용자 JPA 엔티티
+│       │   └── ExternalApiResponse.kt    # 외부 API 응답 JPA 엔티티
+│       ├── config/                       # 설정 클래스
+│       │   ├── JpaConfig.kt              # JPA 설정
+│       │   └── VirtualThreadConfig.kt    # Virtual Thread 설정
+│       ├── mvc/                          # MVC 컨트롤러
+│       │   ├── UserController.kt         # 사용자 REST 컨트롤러
+│       │   └── ExternalApiController.kt  # 외부 API 컨트롤러
+│       ├── repository/                   # JPA 리포지토리
+│       │   ├── UserRepository.kt         # 사용자 리포지토리
+│       │   └── ExternalApiResponseRepository.kt # 외부 API 응답 리포지토리
+│       └── service/
+│           └── ExternalApiService.kt     # 외부 API 서비스
+├── webflux-app/                          # Spring WebFlux 애플리케이션 (포트: 8081)
 │   └── src/main/kotlin/me/bossm0n5t3r/
 │       ├── WebFluxApplication.kt         # Spring WebFlux 메인 애플리케이션
-│       ├── entity/ReactiveUser.kt        # R2DBC 엔티티
-│       ├── config/R2dbcConfig.kt         # R2DBC 설정
-│       ├── webflux/UserHandler.kt        # Spring WebFlux 핸들러
-│       ├── webflux/UserRouter.kt         # Spring WebFlux 라우터
-│       └── repository/r2dbc/ReactiveUserRepository.kt # R2DBC 리포지토리
+│       ├── entity/                       # R2DBC 엔티티
+│       │   ├── ReactiveUser.kt           # 사용자 R2DBC 엔티티
+│       │   └── ReactiveExternalApiResponse.kt # 외부 API 응답 R2DBC 엔티티
+│       ├── config/                       # 설정 클래스
+│       │   ├── R2dbcConfig.kt            # R2DBC 설정
+│       │   └── WebClientConfig.kt        # WebClient 설정
+│       ├── webflux/                      # WebFlux 핸들러/라우터
+│       │   ├── UserHandler.kt            # 사용자 핸들러
+│       │   ├── UserRouter.kt             # 사용자 라우터
+│       │   ├── ExternalHandler.kt        # 외부 API 핸들러
+│       │   └── ExternalRouter.kt         # 외부 API 라우터
+│       └── repository/                   # R2DBC 리포지토리
+│           ├── ReactiveUserRepository.kt # 사용자 리포지토리
+│           └── ReactiveExternalApiResponseRepository.kt # 외부 API 응답 리포지토리
+├── external-app/                         # 외부 API 시뮬레이션 애플리케이션 (포트: 8082)
+│   └── src/main/kotlin/me/bossm0n5t3r/
+│       ├── ExternalApplication.kt        # 외부 API 메인 애플리케이션
+│       └── controller/
+│           └── ExternalApiController.kt  # 외부 API 시뮬레이션 컨트롤러
 ├── benchmark-app/                        # 성능 벤치마크 애플리케이션
 │   └── src/main/kotlin/me/bossm0n5t3r/benchmark/
-│       └── WebFrameworkBenchmark.kt     # 벤치마크 테스트 실행기
+│       ├── BenchmarkApplication.kt       # 벤치마크 메인 애플리케이션
+│       ├── WebFrameworkBenchmark.kt      # 벤치마크 테스트 실행기
+│       ├── BenchmarkResult.kt            # 벤치마크 결과 데이터 클래스
+│       └── BenchmarkScenario.kt          # 벤치마크 시나리오
 ├── docker-compose.yaml                   # PostgreSQL 데이터베이스 설정
 ├── init.sql                              # 데이터베이스 초기화 스크립트
+├── test_external_api.sh                  # 외부 API 테스트 스크립트
+├── benchmark.md                          # 벤치마크 결과 리포트
 └── build.gradle.kts                      # 루트 빌드 설정
 ```
 
@@ -36,10 +74,23 @@ jvm-web-framework-benchmark/
 
 ### 모듈 설명
 
-- **common**: 공통으로 사용되는 DTO 클래스들을 포함
+- **common**: 공통으로 사용되는 DTO 클래스들과 데이터베이스 테이블 설정을 포함
 - **mvc-app**: Spring MVC 기반의 전통적인 블로킹 웹 애플리케이션 (포트: 8080)
+  - JPA + Hibernate를 사용한 데이터베이스 연동
+  - Virtual Thread 지원으로 성능 최적화
+  - 외부 API 호출 및 응답 저장 기능
 - **webflux-app**: Spring WebFlux 기반의 리액티브 웹 애플리케이션 (포트: 8081)
-- **benchmark-app**: 두 애플리케이션의 성능을 비교하는 벤치마크 도구
+  - Spring Data R2DBC를 사용한 비동기 데이터베이스 연동
+  - 완전한 논블로킹 I/O 처리
+  - 외부 API 호출 및 응답 저장 기능
+- **external-app**: 외부 API 시뮬레이션 애플리케이션 (포트: 8082)
+  - 벤치마크 테스트용 외부 서비스 시뮬레이션
+  - 데이터베이스 연결 없는 순수 API 응답 제공
+  - 다양한 도메인(사용자, 날씨, 주식, 주문, 메트릭) 데이터 제공
+- **benchmark-app**: 세 애플리케이션의 성능을 비교하는 벤치마크 도구
+  - MVC vs WebFlux 성능 비교
+  - 외부 API 호출 성능 측정
+  - 상세한 통계 분석 및 리포트 생성
 
 ### Spring Boot Docker Compose 통합
 
@@ -56,9 +107,13 @@ jvm-web-framework-benchmark/
 # Spring WebFlux 애플리케이션 실행 (포트 8081)
 ./gradlew webflux-app:bootRun
 
-# 두 애플리케이션을 동시에 실행 (벤치마크를 위해)
+# 외부 API 시뮬레이션 애플리케이션 실행 (포트 8082)
+./gradlew external-app:bootRun
+
+# 벤치마크를 위해 모든 애플리케이션 동시 실행
 ./gradlew mvc-app:bootRun &
 ./gradlew webflux-app:bootRun &
+./gradlew external-app:bootRun &
 ```
 
 애플리케이션 시작 시:
@@ -86,11 +141,13 @@ docker-compose down
 
 - Spring MVC: `http://localhost:8080`
 - Spring WebFlux: `http://localhost:8081`
+- External API 시뮬레이션: `http://localhost:8082`
 
 ## 📡 API 엔드포인트
 
 ### Spring MVC 엔드포인트 (전통적인 블로킹 방식) - 포트 8080
 
+#### 사용자 관리 API
 - `GET http://localhost:8080/mvc/users` - 모든 사용자 조회
 - `GET http://localhost:8080/mvc/users/{id}` - ID로 사용자 조회
 - `GET http://localhost:8080/mvc/users/search?name={name}` - 이름으로 사용자 검색
@@ -99,8 +156,16 @@ docker-compose down
 - `PUT http://localhost:8080/mvc/users/{id}` - 사용자 업데이트
 - `DELETE http://localhost:8080/mvc/users/{id}` - 사용자 삭제
 
+#### 외부 API 호출
+- `GET http://localhost:8080/mvc/external/user/{id}` - 외부 API에서 사용자 정보 조회
+- `GET http://localhost:8080/mvc/external/weather?city={city}` - 외부 API에서 날씨 정보 조회
+- `GET http://localhost:8080/mvc/external/stock/{symbol}` - 외부 API에서 주식 정보 조회
+- `GET http://localhost:8080/mvc/external/order/{orderId}` - 외부 API에서 주문 상태 조회
+- `GET http://localhost:8080/mvc/external/metrics` - 외부 API에서 메트릭 정보 조회
+
 ### Spring WebFlux 엔드포인트 (리액티브 방식) - 포트 8081
 
+#### 사용자 관리 API
 - `GET http://localhost:8081/webflux/users` - 모든 사용자 조회
 - `GET http://localhost:8081/webflux/users/{id}` - ID로 사용자 조회
 - `GET http://localhost:8081/webflux/users/search?name={name}` - 이름으로 사용자 검색
@@ -109,20 +174,54 @@ docker-compose down
 - `PUT http://localhost:8081/webflux/users/{id}` - 사용자 업데이트
 - `DELETE http://localhost:8081/webflux/users/{id}` - 사용자 삭제
 
+#### 외부 API 호출
+- `GET http://localhost:8081/webflux/external/user/{id}` - 외부 API에서 사용자 정보 조회
+- `GET http://localhost:8081/webflux/external/weather?city={city}` - 외부 API에서 날씨 정보 조회
+- `GET http://localhost:8081/webflux/external/stock/{symbol}` - 외부 API에서 주식 정보 조회
+- `GET http://localhost:8081/webflux/external/order/{orderId}` - 외부 API에서 주문 상태 조회
+- `GET http://localhost:8081/webflux/external/metrics` - 외부 API에서 메트릭 정보 조회
+
+### 외부 API 시뮬레이션 엔드포인트 - 포트 8082
+
+#### 기본 상태 확인
+- `GET http://localhost:8082/api/external/health` - 헬스 체크 (상태, 타임스탬프, 요청 카운트)
+
+#### 사용자 정보
+- `GET http://localhost:8082/api/external/user/{id}` - 랜덤 사용자 정보 반환
+  - 응답: 사용자 ID, 이름, 이메일, 부서, 급여, 타임스탬프
+
+#### 날씨 정보
+- `GET http://localhost:8082/api/external/weather?city={city}` - 날씨 정보 반환 (기본값: Seoul)
+  - 응답: 도시명, 온도, 날씨 상태, 습도, 풍속, 타임스탬프
+
+#### 주식 정보
+- `GET http://localhost:8082/api/external/stock/{symbol}` - 주식 가격 정보 반환
+  - 지원 심볼: AAPL, GOOGL, TSLA, MSFT (기타는 기본값)
+  - 응답: 심볼, 현재가, 변동폭, 변동률, 거래량, 타임스탬프
+
+#### 주문 상태
+- `GET http://localhost:8082/api/external/order/{orderId}` - 주문 상태 정보 반환
+  - 응답: 주문 ID, 상태, 상품명, 수량, 총액, 예상 배송일, 타임스탬프
+
+#### 메트릭/분석 데이터
+- `GET http://localhost:8082/api/external/metrics` - 시스템 메트릭 정보 반환
+  - 응답: 총 사용자 수, 활성 사용자 수, 수익, 전환율, 서버 부하, 응답 시간, 타임스탬프
+
 ## 📊 벤치마크 실행
 
 성능 벤치마크 실행 방법:
 
 ### 1. 준비 단계
 
-먼저 두 애플리케이션을 모두 실행해야 합니다:
+벤치마크 실행을 위해 세 개의 애플리케이션을 모두 실행해야 합니다:
 
 ```bash
-# 두 애플리케이션을 백그라운드로 실행
+# 세 애플리케이션을 백그라운드로 실행
 ./gradlew mvc-app:bootRun &
 ./gradlew webflux-app:bootRun &
+./gradlew external-app:bootRun &
 
-# 애플리케이션이 완전히 시작될 때까지 대기 (약 30초)
+# 모든 애플리케이션이 완전히 시작될 때까지 대기 (약 30-60초)
 ```
 
 ### 2. 벤치마크 실행
@@ -139,11 +238,23 @@ docker-compose down
 - **Update User**: 사용자 정보 업데이트
 - **Delete User**: 사용자 삭제
 - **Search Users**: 이름으로 사용자 검색
+- **External API Call**: 외부 API 호출 성능 (외부 서비스 통신 시뮬레이션)
 - **High Load**: 높은 동시성 부하 테스트
 
 ### 3. 결과 확인
 
 벤치마크 실행 후 `benchmark.md` 파일이 생성되어 상세한 성능 비교 결과를 확인할 수 있습니다.
+
+#### 최신 벤치마크 결과 요약
+
+현재 프로젝트의 `benchmark.md` 파일에서 확인할 수 있는 주요 결과:
+
+- **처리량(Throughput)**: 대부분의 시나리오에서 WebFlux가 MVC보다 60-80% 높은 처리량을 보임
+- **응답 시간(Response Time)**: 낮은 부하에서는 MVC가 더 빠른 평균 응답 시간을 보이지만, 고부하에서는 WebFlux가 일관된 성능을 유지
+- **외부 API 호출**: WebFlux가 논블로킹 I/O의 장점을 활용하여 71% 높은 처리량을 달성
+- **고부하 테스트**: 500개 요청, 10개 동시 연결에서 WebFlux가 65% 더 높은 처리량을 보임
+
+자세한 결과는 프로젝트 루트의 `benchmark.md` 파일을 참조하세요.
 
 ## 🔧 설정 정보
 
@@ -235,41 +346,45 @@ curl -X DELETE http://localhost:8080/mvc/users/1
 
 ### 프레임워크 및 언어
 
-- **Kotlin 2.2.0** - 주 개발 언어
+- **Kotlin 2.2.10** - 주 개발 언어
 - **Spring Boot 3.5.4** - 애플리케이션 프레임워크
-- **JDK 21** - Java 런타임
+- **JDK 24** - Java 런타임
 
 ### 웹 프레임워크
 
 - **Spring MVC** - 전통적인 서블릿 기반 웹 프레임워크
-- **Spring WebFlux** - 리액티브 웹 프레임워크
+- **Spring WebFlux** - 리액티브 웹 프레임워크 (Reactor Netty 기반)
 
 ### 데이터베이스
 
 - **PostgreSQL 15** - 관계형 데이터베이스
-- **Spring Data JPA** - MVC 애플리케이션용 ORM
+- **Spring Data JPA** - MVC 애플리케이션용 ORM (Hibernate 기반)
 - **Spring Data R2DBC** - WebFlux 애플리케이션용 리액티브 데이터베이스 접근
-- **PostgreSQL JDBC Driver 42.7.4** - 동기 데이터베이스 드라이버
+- **PostgreSQL JDBC Driver 42.7.7** - 동기 데이터베이스 드라이버
 - **R2DBC PostgreSQL 1.0.7.RELEASE** - 비동기 데이터베이스 드라이버
 
-### 개발 도구
+### 개발 도구 및 플러그인
 
 - **Spring Boot Docker Compose** - 자동 Docker 서비스 관리
 - **Gradle** - 빌드 도구 및 멀티 모듈 관리
-- **ktlint** - Kotlin 코드 스타일 검사
+- **ktlint 13.0.0** - Kotlin 코드 스타일 검사 (Pinterest ktlint 1.7.1 사용)
+- **Kotlin JVM Plugin** - JVM 대상 Kotlin 컴파일
+- **Kotlin Spring Plugin** - Spring 프레임워크 통합
+- **Kotlin JPA Plugin** - JPA 엔티티 지원
 
-### 벤치마킹
+### 벤치마킹 및 분석
 
-- **OkHttp 4.12.0** - HTTP 클라이언트 (블로킹)
-- **Spring WebClient** - 리액티브 HTTP 클라이언트
-- **Jackson Module Kotlin** - JSON 처리
-- **Apache Commons Math3 3.6.1** - 통계 계산
-- **Kotlinx Coroutines** - 비동기 처리
+- **Spring WebClient** - 리액티브 HTTP 클라이언트 (WebFlux 벤치마킹용)
+- **RestTemplate/RestClient** - 블로킹 HTTP 클라이언트 (MVC 벤치마킹용)
+- **Jackson Module Kotlin 2.19.2** - JSON 처리 및 직렬화
+- **Kotlinx DataFrame 1.0.0-Beta2** - 데이터 분석 및 통계 계산
+- **Kotlinx Coroutines 1.10.2** - 비동기 처리 및 동시성
 
 ### 인프라
 
 - **Docker Compose** - 컨테이너 오케스트레이션
 - **PostgreSQL Docker Image** - 데이터베이스 컨테이너
+- **Netty DNS Resolver** - macOS용 네이티브 DNS 리졸버 (성능 최적화)
 
 ## 🧹 정리
 
