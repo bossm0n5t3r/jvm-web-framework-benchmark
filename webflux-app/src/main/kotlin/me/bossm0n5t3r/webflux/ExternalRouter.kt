@@ -19,16 +19,8 @@ class ExternalRouter {
             "/webflux/external".nest {
                 accept(MediaType.APPLICATION_JSON).nest {
                     // External API endpoints using coroutines
-                    POST("/health") { request -> mono { externalHandler.callExternalHealthApi(request) } }
-                    POST("/user/{userId}") { request -> mono { externalHandler.callExternalUserApi(request) } }
-                    POST("/weather") { request -> mono { externalHandler.callExternalWeatherApi(request) } }
-                    POST("/stock/{symbol}") { request -> mono { externalHandler.callExternalStockApi(request) } }
-                    POST("/order/{orderId}") { request -> mono { externalHandler.callExternalOrderApi(request) } }
-                    POST("/metrics") { request -> mono { externalHandler.callExternalMetricsApi(request) } }
-
-                    // Get stored external API responses
-                    GET("/responses") { request -> mono { externalHandler.getAllExternalApiResponses(request) } }
-                    GET("/responses/endpoint") { request -> mono { externalHandler.getExternalApiResponsesByEndpoint(request) } }
+                    GET("/health") { _ -> mono { externalHandler.callExternalHealthApi() } }
+                    POST("") { _ -> mono { externalHandler.callExternalApi() } }
                 }
             }
         }

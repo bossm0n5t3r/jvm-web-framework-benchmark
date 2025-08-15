@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.entity
 
+import me.bossm0n5t3r.table.ExternalApiResponseTable
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -11,19 +12,19 @@ import java.time.LocalDateTime
 @Table("external_api_responses")
 data class ReactiveExternalApiResponse(
     @Id
-    val id: Long = 0,
-    @Column("api_endpoint")
-    val apiEndpoint: String,
-    @Column("http_method")
-    val httpMethod: String,
-    @Column("response_body")
-    val responseBody: String,
-    @Column("status_code")
-    val statusCode: Int,
-    @Column("request_timestamp")
-    val requestTimestamp: LocalDateTime = LocalDateTime.now(),
-    @Column("response_timestamp")
-    val responseTimestamp: LocalDateTime = LocalDateTime.now(),
+    override val id: Long = 0,
+    @Column("user_info")
+    override val userInfo: String,
+    @Column("weather_info")
+    override val weatherInfo: String,
+    @Column("stock_price_info")
+    override val stockPriceInfo: String,
+    @Column("order_status_info")
+    override val orderStatusInfo: String,
+    @Column("metric_info")
+    override val metricInfo: String,
     @Column("created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-)
+    override val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column("updated_at")
+    override val updatedAt: LocalDateTime = LocalDateTime.now(),
+) : ExternalApiResponseTable
