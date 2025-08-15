@@ -35,6 +35,9 @@ import kotlin.system.measureTimeMillis
 class WebFrameworkBenchmark : CommandLineRunner {
     private val mvcBaseUrl = "http://localhost:8080/mvc/users"
     private val webfluxBaseUrl = "http://localhost:8081/webflux/users"
+    private val externalBaseUrl = "http://localhost:8082/api/external"
+    private val mvcExternalUrl = "http://localhost:8080/mvc/external"
+    private val webfluxExternalUrl = "http://localhost:8081/webflux/external"
 
     // For collecting benchmark results to write to benchmark.md
     private val benchmarkResults = StringBuilder()
@@ -57,6 +60,7 @@ class WebFrameworkBenchmark : CommandLineRunner {
         println("=".repeat(80))
         println("MVC App URL: $mvcBaseUrl")
         println("WebFlux App URL: $webfluxBaseUrl")
+        println("External App URL: $externalBaseUrl")
         println()
 
         // Wait for applications to be ready
@@ -77,6 +81,7 @@ class WebFrameworkBenchmark : CommandLineRunner {
         val maxRetries = 30
         var mvcReady = false
         var webfluxReady = false
+        var externalReady = false
 
         for (i in 1..maxRetries) {
             if (!mvcReady) {
@@ -89,7 +94,12 @@ class WebFrameworkBenchmark : CommandLineRunner {
                 if (webfluxReady) println("✅ WebFlux Application is ready")
             }
 
-            if (mvcReady && webfluxReady) break
+            if (!externalReady) {
+                externalReady = checkApplicationHealth("$externalBaseUrl/health")
+                if (externalReady) println("✅ External Application is ready")
+            }
+
+            if (mvcReady && webfluxReady && externalReady) break
 
             if (i == maxRetries) {
                 println("❌ Applications failed to start within timeout")
@@ -139,6 +149,7 @@ class WebFrameworkBenchmark : CommandLineRunner {
                 BenchmarkScenario("📝 UPDATE User", ::benchmarkUpdateUser),
                 BenchmarkScenario("🗑️ DELETE User", ::benchmarkDeleteUser),
                 BenchmarkScenario("🔎 SEARCH Users by Name", ::benchmarkSearchUsers),
+                BenchmarkScenario("🌐 External API Call", ::benchmarkExternalApiCall),
                 BenchmarkScenario("💥 HIGH LOAD Test", ::benchmarkHighLoad),
             )
 
@@ -338,6 +349,25 @@ class WebFrameworkBenchmark : CommandLineRunner {
         compareResults(mvcResults, webfluxResults, "💥 HIGH LOAD Test")
     }
 
+    private fun benchmarkExternalApiCall() {
+        val requests = 50
+        val concurrency = 5
+
+        println("🌐 External API Integration Test - $requests requests with $concurrency concurrent threads")
+
+        val mvcResults =
+            runBenchmarkScenario("MVC", requests, concurrency) {
+                performHttpPostNoBody(mvcExternalUrl)
+            }
+
+        val webfluxResults =
+            runBenchmarkScenario("WebFlux", requests, concurrency) {
+                performReactivePostNoBody(webfluxExternalUrl)
+            }
+
+        compareResults(mvcResults, webfluxResults, "🌐 External API Call")
+    }
+
     private fun runBenchmarkScenario(
         framework: String,
         requests: Int,
@@ -534,6 +564,27 @@ class WebFrameworkBenchmark : CommandLineRunner {
                 .awaitSingleOrNull()
         }
 
+    private fun performHttpPostNoBody(url: String): Long =
+        measureTimeMillis {
+            restClient
+                .post()
+                .uri(url)
+                .retrieve()
+                .body(String::class.java)
+            // Response is consumed, no need to check status as retrieve() throws on error
+        }
+
+    private suspend fun performReactivePostNoBody(url: String): Long =
+        measureTimeMillis {
+            webClient
+                .post()
+                .uri(url)
+                .retrieve()
+                .bodyToMono<String>()
+                .timeout(Duration.ofSeconds(30))
+                .awaitSingle()
+        }
+
     private fun compareResults(
         mvcResult: BenchmarkResult,
         webfluxResult: BenchmarkResult,
@@ -702,13 +753,15 @@ class WebFrameworkBenchmark : CommandLineRunner {
             content.append("## Configuration\n\n")
             content.append("| Framework | URL |\n")
             content.append("|-----------|-----|\n")
-            content.append("| MVC | `http://localhost:8080/mvc/users` |\n")
-            content.append("| WebFlux | `http://localhost:8081/webflux/users` |\n\n")
+            content.append("| MVC | `http://localhost:8080/mvc` |\n")
+            content.append("| WebFlux | `http://localhost:8081/webflux` |\n")
+            content.append("| External | `http://localhost:8082/api/external` |\n\n")
 
             content.append("## Benchmark Execution Log\n\n")
             content.append("- ⏳ Waiting for applications to be ready...\n")
             content.append("- ✅ WebFlux Application is ready\n")
             content.append("- ✅ MVC Application is ready\n")
+            content.append("- ✅ External Application is ready\n")
             content.append("- ✅ Applications are ready. Cleaning up tables\n")
             content.append("- ✅ Everything is ready. Starting benchmark...\n\n")
 
