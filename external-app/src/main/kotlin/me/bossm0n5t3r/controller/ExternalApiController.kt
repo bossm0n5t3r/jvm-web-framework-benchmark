@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.controller
 
+import kotlinx.coroutines.delay
 import me.bossm0n5t3r.dto.Metric
 import me.bossm0n5t3r.dto.OrderStatus
 import me.bossm0n5t3r.dto.StockPrice
@@ -25,6 +26,7 @@ import kotlin.random.Random
 class ExternalApiController {
     private val requestCounter = AtomicLong(0)
     private val random = Random.Default
+    private val timeUnit = 100L
 
     /**
      * Health check endpoint with timestamp
@@ -42,9 +44,10 @@ class ExternalApiController {
      * Get random user data
      */
     @GetMapping("/user/{id}")
-    fun getUser(
+    suspend fun getUser(
         @PathVariable id: String,
     ): ResponseEntity<User> {
+        delay(1 * timeUnit)
         val names = listOf("Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry")
         val departments = listOf("Engineering", "Marketing", "Sales", "HR", "Finance", "Operations")
 
@@ -65,9 +68,10 @@ class ExternalApiController {
      * Get weather data with random values
      */
     @GetMapping("/weather")
-    fun getWeather(
+    suspend fun getWeather(
         @RequestParam(defaultValue = "Seoul") city: String,
     ): Weather {
+        delay(2 * timeUnit)
         val conditions = listOf("Sunny", "Cloudy", "Rainy", "Snowy", "Partly Cloudy", "Windy")
 
         return Weather(
@@ -85,9 +89,10 @@ class ExternalApiController {
      * Get stock price with fluctuating values
      */
     @GetMapping("/stock/{symbol}")
-    fun getStockPrice(
+    suspend fun getStockPrice(
         @PathVariable symbol: String,
     ): StockPrice {
+        delay(3 * timeUnit)
         val basePrice =
             when (symbol.uppercase()) {
                 "AAPL" -> 150.0
@@ -115,9 +120,10 @@ class ExternalApiController {
      * Get order status with random processing states
      */
     @GetMapping("/order/{orderId}")
-    fun getOrderStatus(
+    suspend fun getOrderStatus(
         @PathVariable orderId: String,
     ): OrderStatus {
+        delay(4 * timeUnit)
         val statuses = listOf("PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED")
         val products = listOf("Laptop", "Phone", "Tablet", "Headphones", "Watch", "Camera")
 
@@ -137,8 +143,9 @@ class ExternalApiController {
      * Get random metrics/analytics data
      */
     @GetMapping("/metrics")
-    fun getMetrics(): Metric =
-        Metric(
+    suspend fun getMetrics(): Metric {
+        delay(5 * timeUnit)
+        return Metric(
             totalUsers = random.nextInt(10000, 100000),
             activeUsers = random.nextInt(1000, 10000),
             revenue = random.nextDouble(10000.0, 500000.0),
@@ -148,4 +155,5 @@ class ExternalApiController {
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             requestId = requestCounter.incrementAndGet(),
         )
+    }
 }
