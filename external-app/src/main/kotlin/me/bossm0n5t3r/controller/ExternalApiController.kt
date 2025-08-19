@@ -26,7 +26,7 @@ import kotlin.random.Random
 class ExternalApiController {
     private val requestCounter = AtomicLong(0)
     private val random = Random.Default
-    private val timeUnit = 100L
+    private val timeUnit = 1000L
 
     /**
      * Health check endpoint with timestamp
