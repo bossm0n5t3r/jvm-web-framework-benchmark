@@ -2,6 +2,8 @@ package me.bossm0n5t3r.service
 
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import java.util.UUID
@@ -15,6 +17,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 class ExternalApiService(
     private val restClient: RestClient,
     private val externalApiResponseRepository: ExternalApiResponseRepository,
+    @param:Qualifier("virtualThreadExecutor") private val taskExecutor: AsyncTaskExecutor,
 ) {
     companion object {
         private const val EXTERNAL_API_BASE_URL = "http://localhost:8082"
@@ -31,18 +34,21 @@ class ExternalApiService(
 
     fun callExternalApi(): ExternalApiResponse {
         val uuid = UUID.randomUUID().toString()
-        val userInfo = callExternalApi("/api/external/user/$uuid")
-        val weatherInfo = callExternalApi("/api/external/weather?city=${CITIES.random()}")
-        val stockInfo = callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
-        val orderInfo = callExternalApi("/api/external/order/$uuid")
-        val metricInfo = callExternalApi("/api/external/metrics")
+        val userInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/user/$uuid") }
+        val weatherInfoFuture =
+            taskExecutor.submit<String?> { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
+        val stockInfoFuture =
+            taskExecutor.submit<String?> { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+        val orderInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/order/$uuid") }
+        val metricInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/metrics") }
+
         val externalApiResponse =
             ExternalApiResponse(
-                userInfo = userInfo.orEmpty(),
-                weatherInfo = weatherInfo.orEmpty(),
-                stockPriceInfo = stockInfo.orEmpty(),
-                orderStatusInfo = orderInfo.orEmpty(),
-                metricInfo = metricInfo.orEmpty(),
+                userInfo = userInfoFuture.get().orEmpty(),
+                weatherInfo = weatherInfoFuture.get().orEmpty(),
+                stockPriceInfo = stockInfoFuture.get().orEmpty(),
+                orderStatusInfo = orderInfoFuture.get().orEmpty(),
+                metricInfo = metricInfoFuture.get().orEmpty(),
             )
         return externalApiResponseRepository.save(externalApiResponse)
     }
