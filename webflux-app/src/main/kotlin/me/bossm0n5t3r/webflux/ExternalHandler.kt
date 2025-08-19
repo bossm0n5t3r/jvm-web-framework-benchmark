@@ -1,5 +1,7 @@
 package me.bossm0n5t3r.webflux
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
@@ -32,29 +34,30 @@ class ExternalHandler(
         return ServerResponse.ok().build().awaitSingle()
     }
 
-    suspend fun callExternalApi(): ServerResponse {
-        val uuid = UUID.randomUUID().toString()
-        val userInfo = callExternalApi("/api/external/user/$uuid")
-        val weatherInfo = callExternalApi("/api/external/weather?city=${CITIES.random()}")
-        val stockInfo = callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
-        val orderInfo = callExternalApi("/api/external/order/$uuid")
-        val metricInfo = callExternalApi("/api/external/metrics")
-        val externalApiResponse =
-            ReactiveExternalApiResponse(
-                userInfo = userInfo.orEmpty(),
-                weatherInfo = weatherInfo.orEmpty(),
-                stockPriceInfo = stockInfo.orEmpty(),
-                orderStatusInfo = orderInfo.orEmpty(),
-                metricInfo = metricInfo.orEmpty(),
-                createdAt = LocalDateTime.now(),
-            )
-        val response = externalApiResponseRepository.save(externalApiResponse).awaitSingle()
-        return ServerResponse
-            .status(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(response)
-            .awaitSingle()
-    }
+    suspend fun callExternalApi(): ServerResponse =
+        coroutineScope {
+            val uuid = UUID.randomUUID().toString()
+            val userInfo = async { callExternalApi("/api/external/user/$uuid") }
+            val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
+            val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+            val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
+            val metricInfo = async { callExternalApi("/api/external/metrics") }
+            val externalApiResponse =
+                ReactiveExternalApiResponse(
+                    userInfo = userInfo.await().orEmpty(),
+                    weatherInfo = weatherInfo.await().orEmpty(),
+                    stockPriceInfo = stockInfo.await().orEmpty(),
+                    orderStatusInfo = orderInfo.await().orEmpty(),
+                    metricInfo = metricInfo.await().orEmpty(),
+                    createdAt = LocalDateTime.now(),
+                )
+            val response = externalApiResponseRepository.save(externalApiResponse).awaitSingle()
+            ServerResponse
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .awaitSingle()
+        }
 
     /**
      * Call external API using coroutines
