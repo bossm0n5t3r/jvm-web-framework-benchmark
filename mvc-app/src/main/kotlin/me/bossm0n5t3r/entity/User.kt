@@ -20,7 +20,7 @@ data class User(
     override val id: Long = 0,
     @Column(nullable = false)
     override val name: String,
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     override val email: String,
     @Column(name = "created_at")
     override val createdAt: LocalDateTime = LocalDateTime.now(),
