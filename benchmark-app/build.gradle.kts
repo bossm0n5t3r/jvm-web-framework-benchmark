@@ -1,3 +1,7 @@
+plugins {
+    alias(libs.plugins.gatling.gradle)
+}
+
 dependencies {
     api(project(":common"))
 
@@ -18,6 +22,10 @@ dependencies {
     // Coroutines for async operations
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactor)
+
+    // gatling
+    implementation(libs.gatling.test.framework)
+    implementation(libs.gatling.charts.highcharts)
 
     // Testing
     testImplementation(libs.spring.boot.starter.test)
