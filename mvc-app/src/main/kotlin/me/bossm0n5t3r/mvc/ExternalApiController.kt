@@ -29,4 +29,7 @@ class ExternalApiController(
 
     @PostMapping
     fun callExternalApi(): ExternalApiResponse = externalApiService.callExternalApi()
+
+    @PostMapping("/no-db")
+    fun callExternalApiWithNoDatabase(): ExternalApiResponse = externalApiService.callExternalApiWithNoDatabase()
 }
