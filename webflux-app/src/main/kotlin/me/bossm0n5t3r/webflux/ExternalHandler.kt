@@ -34,30 +34,7 @@ class ExternalHandler(
         return ServerResponse.ok().build().awaitSingle()
     }
 
-    suspend fun callExternalApi(): ServerResponse =
-        coroutineScope {
-            val uuid = UUID.randomUUID().toString()
-            val userInfo = async { callExternalApi("/api/external/user/$uuid") }
-            val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
-            val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
-            val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
-            val metricInfo = async { callExternalApi("/api/external/metrics") }
-            val externalApiResponse =
-                ReactiveExternalApiResponse(
-                    userInfo = userInfo.await().orEmpty(),
-                    weatherInfo = weatherInfo.await().orEmpty(),
-                    stockPriceInfo = stockInfo.await().orEmpty(),
-                    orderStatusInfo = orderInfo.await().orEmpty(),
-                    metricInfo = metricInfo.await().orEmpty(),
-                    createdAt = LocalDateTime.now(),
-                )
-            val response = externalApiResponseRepository.save(externalApiResponse).awaitSingle()
-            ServerResponse
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(response)
-                .awaitSingle()
-        }
+    suspend fun callExternalApi(): ServerResponse = getReactiveExternalApiResponse().saveDatabase().toServerResponse()
 
     /**
      * Call external API using coroutines
@@ -70,4 +47,33 @@ class ExternalHandler(
             .toEntity<String>()
             .awaitSingleOrNull()
             ?.body
+
+    suspend fun callExternalApiWithNoDatabase(): ServerResponse = getReactiveExternalApiResponse().toServerResponse()
+
+    private suspend fun getReactiveExternalApiResponse() =
+        coroutineScope {
+            val uuid = UUID.randomUUID().toString()
+            val userInfo = async { callExternalApi("/api/external/user/$uuid") }
+            val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
+            val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+            val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
+            val metricInfo = async { callExternalApi("/api/external/metrics") }
+            ReactiveExternalApiResponse(
+                userInfo = userInfo.await().orEmpty(),
+                weatherInfo = weatherInfo.await().orEmpty(),
+                stockPriceInfo = stockInfo.await().orEmpty(),
+                orderStatusInfo = orderInfo.await().orEmpty(),
+                metricInfo = metricInfo.await().orEmpty(),
+                createdAt = LocalDateTime.now(),
+            )
+        }
+
+    private suspend fun ReactiveExternalApiResponse.saveDatabase() = externalApiResponseRepository.save(this).awaitSingle()
+
+    private suspend fun ReactiveExternalApiResponse.toServerResponse() =
+        ServerResponse
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(this)
+            .awaitSingle()
 }

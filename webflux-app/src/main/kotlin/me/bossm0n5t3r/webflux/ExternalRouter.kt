@@ -21,6 +21,7 @@ class ExternalRouter {
                     // External API endpoints using coroutines
                     GET("/health") { _ -> mono { externalHandler.callExternalHealthApi() } }
                     POST("") { _ -> mono { externalHandler.callExternalApi() } }
+                    POST("/no-db") { _ -> mono { externalHandler.callExternalApiWithNoDatabase() } }
                 }
             }
         }
