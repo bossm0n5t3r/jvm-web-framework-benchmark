@@ -1,28 +1,24 @@
 package me.bossm0n5t3r.webflux
 
-import kotlinx.coroutines.reactor.mono
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.http.MediaType
-import org.springframework.web.reactive.function.server.RouterFunction
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.router
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Spring WebFlux Router Configuration
  */
-@Configuration
-class ExternalRouter {
-    @Bean
-    fun externalRoutes(externalHandler: ExternalHandler): RouterFunction<ServerResponse> =
-        router {
-            "/webflux/external".nest {
-                accept(MediaType.APPLICATION_JSON).nest {
-                    // External API endpoints using coroutines
-                    GET("/health") { _ -> mono { externalHandler.callExternalHealthApi() } }
-                    POST("") { _ -> mono { externalHandler.callExternalApi() } }
-                    GET("/no-db") { _ -> mono { externalHandler.callExternalApiWithNoDatabase() } }
-                }
-            }
-        }
+@RestController
+@RequestMapping("/webflux/external")
+class ExternalRouter(
+    private val externalHandler: ExternalHandler,
+) {
+    @GetMapping("/health")
+    suspend fun health() = externalHandler.callExternalHealthApi()
+
+    @PostMapping
+    suspend fun callExternalApi() = externalHandler.callExternalApi()
+
+    @GetMapping("/no-db")
+    suspend fun callExternalApiWithNoDatabase() = externalHandler.callExternalApiWithNoDatabase()
 }
