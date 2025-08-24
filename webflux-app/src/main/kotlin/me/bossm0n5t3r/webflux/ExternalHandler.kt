@@ -28,7 +28,7 @@ class ExternalHandler(
         println("Calling health check API")
     }
 
-    suspend fun callExternalApi(): ReactiveExternalApiResponse = getReactiveExternalApiResponse().saveDatabase()
+    suspend fun callExternalApi(): ReactiveExternalApiResponse = callExternalApiWithNoDatabase().saveDatabase()
 
     /**
      * Call external API using coroutines
@@ -46,9 +46,7 @@ class ExternalHandler(
             null
         }
 
-    suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse = getReactiveExternalApiResponse()
-
-    private suspend fun getReactiveExternalApiResponse(): ReactiveExternalApiResponse =
+    suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse =
         coroutineScope {
             val uuid = UUID.randomUUID().toString()
             val userInfo = async { callExternalApi("/api/external/user/$uuid") }
