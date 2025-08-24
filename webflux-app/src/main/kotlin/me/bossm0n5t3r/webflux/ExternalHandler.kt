@@ -48,7 +48,7 @@ class ExternalHandler(
 
     suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse = getReactiveExternalApiResponse()
 
-    private suspend fun getReactiveExternalApiResponse() =
+    private suspend fun getReactiveExternalApiResponse(): ReactiveExternalApiResponse =
         coroutineScope {
             val uuid = UUID.randomUUID().toString()
             val userInfo = async { callExternalApi("/api/external/user/$uuid") }
