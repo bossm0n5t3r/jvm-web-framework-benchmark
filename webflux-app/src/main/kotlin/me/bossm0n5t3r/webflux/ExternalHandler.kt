@@ -6,13 +6,8 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
 import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.toEntity
-import org.springframework.web.reactive.function.server.ServerResponse
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -29,26 +24,29 @@ class ExternalHandler(
     /**
      * Call external health API using coroutines
      */
-    suspend fun callExternalHealthApi(): ServerResponse {
+    suspend fun callExternalHealthApi() {
         println("Calling health check API")
-        return ServerResponse.ok().build().awaitSingle()
     }
 
-    suspend fun callExternalApi(): ServerResponse = getReactiveExternalApiResponse().saveDatabase().toServerResponse()
+    suspend fun callExternalApi(): ReactiveExternalApiResponse = getReactiveExternalApiResponse().saveDatabase()
 
     /**
      * Call external API using coroutines
      */
-    suspend fun callExternalApi(endpoint: String): String? =
-        webClient
-            .get()
-            .uri("${EXTERNAL_API_BASE_URL}$endpoint")
-            .retrieve()
-            .toEntity<String>()
-            .awaitSingleOrNull()
-            ?.body
+    private suspend fun callExternalApi(endpoint: String): String? =
+        try {
+            webClient
+                .get()
+                .uri("${EXTERNAL_API_BASE_URL}$endpoint")
+                .retrieve()
+                .bodyToMono(String::class.java)
+                .awaitSingleOrNull()
+        } catch (e: Exception) {
+            println("Failed to call external API at $endpoint: ${e.message}")
+            null
+        }
 
-    suspend fun callExternalApiWithNoDatabase(): ServerResponse = getReactiveExternalApiResponse().toServerResponse()
+    suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse = getReactiveExternalApiResponse()
 
     private suspend fun getReactiveExternalApiResponse() =
         coroutineScope {
@@ -64,16 +62,8 @@ class ExternalHandler(
                 stockPriceInfo = stockInfo.await().orEmpty(),
                 orderStatusInfo = orderInfo.await().orEmpty(),
                 metricInfo = metricInfo.await().orEmpty(),
-                createdAt = LocalDateTime.now(),
             )
         }
 
     private suspend fun ReactiveExternalApiResponse.saveDatabase() = externalApiResponseRepository.save(this).awaitSingle()
-
-    private suspend fun ReactiveExternalApiResponse.toServerResponse() =
-        ServerResponse
-            .status(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(this)
-            .awaitSingle()
 }
