@@ -58,11 +58,13 @@ val copyGatlingReports =
                 val name = file.name
                 var targetName: String? = null
 
-                if (name.startsWith("mvcsimulation-")) {
-                    targetName = "mvcsimulation"
-                } else if (name.startsWith("externalapiwithnodatabasesimulation-")) {
-                    targetName = "externalapiwithnodatabasesimulation"
-                }
+                targetName =
+                    when {
+                        name.startsWith("externalapiwithnodatabasesimulation-") -> "external-api-with-no-database"
+                        name.startsWith("mvcexternalapiwithnodatabasesimulation-") -> "mvc-external-api-with-no-database"
+                        name.startsWith("webfluxexternalapiwithnodatabasesimulation-") -> "webflux-external-api-with-no-database"
+                        else -> null
+                    }
 
                 // 대상 디렉터리가 맞는지 확인하고 복사를 진행합니다.
                 if (file.isDirectory && targetName != null) {
