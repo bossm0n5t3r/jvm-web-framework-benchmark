@@ -8,6 +8,8 @@ dependencies {
     developmentOnly(libs.spring.boot.docker.compose)
     implementation(libs.kotlin.reflect)
 
+    implementation(libs.apache.httpclient5)
+
     // Database dependencies
     runtimeOnly(libs.postgresql)
     testImplementation(libs.spring.boot.starter.test)

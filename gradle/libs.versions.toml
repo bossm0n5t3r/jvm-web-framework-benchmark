@@ -17,6 +17,8 @@ netty-resolver-dns-native-macos-version = "4.2.4.Final"
 
 gatling = "3.13.5"
 
+httpclient5 = "5.5"
+
 [plugins]
 # Kotlin JVM Gradle plugin
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -64,3 +66,6 @@ r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "
 # gatling
 gatling-test-framework = { module = "io.gatling:gatling-test-framework", version.ref = "gatling" }
 gatling-charts-highcharts = { module = "io.gatling.highcharts:gatling-charts-highcharts", version.ref = "gatling" }
+
+# httpclient5
+apache-httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpclient5" }
