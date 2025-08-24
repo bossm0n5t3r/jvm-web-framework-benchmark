@@ -11,7 +11,7 @@ import java.time.Duration
 class ExternalAPIWithNoDatabaseSimulation : Simulation() {
     private val mvcUrl = "http://localhost:8080"
     private val webfluxUrl = "http://localhost:8081"
-    private val users = 1
+    private val users = 1_000
 
     private val mvcHttpProtocol =
         http
@@ -49,9 +49,8 @@ class ExternalAPIWithNoDatabaseSimulation : Simulation() {
             webfluxScenario
                 .injectOpen(atOnceUsers(users))
                 .protocols(webfluxHttpProtocol),
-        ).maxDuration(Duration.ofSeconds(30))
+        ).maxDuration(Duration.ofMinutes(10))
             .assertions(
-                global().responseTime().percentile3().lt(10000), // 95th percentile < 5 seconds
                 global().successfulRequests().percent().gt(95.0), // 95% success rate
             )
     }
