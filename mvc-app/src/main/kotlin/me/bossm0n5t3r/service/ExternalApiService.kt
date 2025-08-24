@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import java.util.UUID
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import org.springframework.web.client.RestClientException
 
 /**
  * Service for calling external APIs and storing responses in a database
@@ -41,12 +42,17 @@ class ExternalApiService(
      * Call external API using Virtual Threads
      */
     private fun callExternalApi(endpoint: String): String? =
-        restClient
-            .get()
-            .uri("$EXTERNAL_API_BASE_URL$endpoint")
-            .retrieve()
-            .toEntity(String::class.java)
-            .body
+        try {
+            restClient
+                .get()
+                .uri("$EXTERNAL_API_BASE_URL$endpoint")
+                .retrieve()
+                .toEntity(String::class.java)
+                .body
+        } catch (e: RestClientException) {
+            println("Failed to call external API at $endpoint: ${e.message}")
+            null
+        }
 
     fun callExternalApiWithNoDatabase(): ExternalApiResponse {
         val uuid = UUID.randomUUID().toString()
