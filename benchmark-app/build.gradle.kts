@@ -37,9 +37,50 @@ tasks.bootRun {
 
 // Gatling 리포트를 프로젝트 루트의 'gatling-reports' 디렉터리로 복사하는 태스크를 정의합니다.
 val copyGatlingReports =
-    tasks.register<Copy>("copyGatlingReports") {
-        from(layout.buildDirectory.dir("reports/gatling"))
-        into(rootProject.layout.projectDirectory.dir("reports/gatling"))
+    tasks.register("copyGatlingReports") {
+        doLast {
+            val sourceDir =
+                layout.buildDirectory
+                    .dir("reports/gatling")
+                    .get()
+                    .asFile
+            val targetRootDir =
+                rootProject.layout.projectDirectory
+                    .dir("reports/gatling")
+                    .asFile
+
+            // 소스 디렉터리가 없으면 작업을 중단합니다.
+            if (!sourceDir.exists()) {
+                return@doLast
+            }
+
+            sourceDir.listFiles()?.forEach { file ->
+                val name = file.name
+                var targetName: String? = null
+
+                if (name.startsWith("mvcsimulation-")) {
+                    targetName = "mvcsimulation"
+                } else if (name.startsWith("externalapiwithnodatabasesimulation-")) {
+                    targetName = "externalapiwithnodatabasesimulation"
+                }
+
+                // 대상 디렉터리가 맞는지 확인하고 복사를 진행합니다.
+                if (file.isDirectory && targetName != null) {
+                    val targetDir = project.file("$targetRootDir/$targetName")
+
+                    // 복사 대상 위치에 이미 디렉터리가 있다면 삭제합니다.
+                    if (targetDir.exists()) {
+                        targetDir.deleteRecursively()
+                    }
+
+                    // Gatling 리포트 디렉터리를 복사합니다.
+                    copy {
+                        from(file)
+                        into(targetDir)
+                    }
+                }
+            }
+        }
     }
 
 // 'gatlingRun' 태스크가 완료된 후 'copyGatlingReports' 태스크를 실행하도록 설정합니다.
