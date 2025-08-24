@@ -1,0 +1,11 @@
+### MVC
+
+GET localhost:8080/mvc/external/health
+
+### WebFlux
+
+GET localhost:8081/webflux/external/health
+
+### External
+
+GET localhost:8082/api/external/health
