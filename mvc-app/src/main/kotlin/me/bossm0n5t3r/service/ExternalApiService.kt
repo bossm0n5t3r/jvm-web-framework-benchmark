@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientException
 import java.util.UUID
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import org.springframework.web.client.RestClientException
 
 /**
  * Service for calling external APIs and storing responses in a database
