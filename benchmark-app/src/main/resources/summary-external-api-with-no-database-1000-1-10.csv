@@ -1,0 +1,4 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+MVC - External Call,10000,5025,5000,10032,180.55,0.000%,146.23945,46.36,22.99,324.6
+WebFlux - External Call,10000,5094,5001,6058,180.15,0.000%,193.85104,244.47,31.24,1291.4
+TOTAL,20000,5060,5000,10032,183.57,0.000%,161.52610,127.45,25.71,808.0
