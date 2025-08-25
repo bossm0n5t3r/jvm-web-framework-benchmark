@@ -63,6 +63,9 @@ val copyGatlingReports =
                         name.startsWith("externalapiwithnodatabasesimulation-") -> "external-api-with-no-database"
                         name.startsWith("mvcexternalapiwithnodatabasesimulation-") -> "mvc-external-api-with-no-database"
                         name.startsWith("webfluxexternalapiwithnodatabasesimulation-") -> "webflux-external-api-with-no-database"
+                        name.startsWith(
+                            "webfluxexternalapiwithnodatabaseandnocoroutinessimulation-",
+                        ) -> "webflux-external-api-with-no-database-and-no-coroutines"
                         else -> null
                     }
 
