@@ -3,11 +3,11 @@ package me.bossm0n5t3r.webflux
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactive.awaitSingle
-import kotlinx.coroutines.reactor.awaitSingleOrNull
 import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
 import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBodyOrNull
 import java.util.UUID
 
 @Component
@@ -28,7 +28,7 @@ class ExternalHandler(
         println("Calling health check API")
     }
 
-    suspend fun callExternalApi(): ReactiveExternalApiResponse = callExternalApiWithNoDatabase().saveDatabase()
+    suspend fun callExternalApiWithDatabase(): ReactiveExternalApiResponse = callExternalApiWithNoDatabase().saveDatabase()
 
     /**
      * Call external API using coroutines
@@ -39,8 +39,7 @@ class ExternalHandler(
                 .get()
                 .uri("${EXTERNAL_API_BASE_URL}$endpoint")
                 .retrieve()
-                .bodyToMono(String::class.java)
-                .awaitSingleOrNull()
+                .awaitBodyOrNull()
         } catch (e: Exception) {
             println("Failed to call external API at $endpoint: ${e.message}")
             null

@@ -17,7 +17,7 @@ class ExternalRouter(
     suspend fun health() = externalHandler.callExternalHealthApi()
 
     @PostMapping
-    suspend fun callExternalApi() = externalHandler.callExternalApi()
+    suspend fun callExternalApiWithDatabase() = externalHandler.callExternalApiWithDatabase()
 
     @GetMapping("/no-db")
     suspend fun callExternalApiWithNoDatabase() = externalHandler.callExternalApiWithNoDatabase()
