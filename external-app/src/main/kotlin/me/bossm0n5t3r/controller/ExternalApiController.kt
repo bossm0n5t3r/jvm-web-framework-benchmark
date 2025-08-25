@@ -1,12 +1,10 @@
 package me.bossm0n5t3r.controller
 
-import kotlinx.coroutines.delay
 import me.bossm0n5t3r.dto.Metric
 import me.bossm0n5t3r.dto.OrderStatus
 import me.bossm0n5t3r.dto.StockPrice
 import me.bossm0n5t3r.dto.User
 import me.bossm0n5t3r.dto.Weather
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,19 +12,21 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.atomic.AtomicLong
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.random.Random
 
 /**
  * External API Controller that simulates external service calls
  * Each endpoint returns different responses to simulate real external APIs
  */
+@OptIn(ExperimentalAtomicApi::class)
 @RestController
 @RequestMapping("/api/external")
 class ExternalApiController {
     private val requestCounter = AtomicLong(0)
     private val random = Random.Default
-    private val timeUnit = 1000L
 
     /**
      * Health check endpoint with timestamp
@@ -36,7 +36,7 @@ class ExternalApiController {
         mapOf(
             "status" to "OK",
             "timestamp" to LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            "requestCount" to requestCounter.incrementAndGet(),
+            "requestCount" to requestCounter.incrementAndFetch(),
             "uptime" to "${random.nextInt(1, 1000)} seconds",
         )
 
@@ -44,23 +44,20 @@ class ExternalApiController {
      * Get random user data
      */
     @GetMapping("/user/{id}")
-    suspend fun getUser(
+    fun getUser(
         @PathVariable id: String,
-    ): ResponseEntity<User> {
-        delay(1 * timeUnit)
+    ): User {
         val names = listOf("Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry")
         val departments = listOf("Engineering", "Marketing", "Sales", "HR", "Finance", "Operations")
 
-        return ResponseEntity.ok(
-            User(
-                id = id,
-                name = names.random(),
-                email = "${names.random().lowercase()}@company.com",
-                department = departments.random(),
-                salary = random.nextInt(50000, 150000),
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndGet(),
-            ),
+        return User(
+            id = id,
+            name = names.random(),
+            email = "${names.random().lowercase()}@company.com",
+            department = departments.random(),
+            salary = random.nextInt(50000, 150000),
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
         )
     }
 
@@ -68,10 +65,9 @@ class ExternalApiController {
      * Get weather data with random values
      */
     @GetMapping("/weather")
-    suspend fun getWeather(
+    fun getWeather(
         @RequestParam(defaultValue = "Seoul") city: String,
     ): Weather {
-        delay(2 * timeUnit)
         val conditions = listOf("Sunny", "Cloudy", "Rainy", "Snowy", "Partly Cloudy", "Windy")
 
         return Weather(
@@ -81,7 +77,7 @@ class ExternalApiController {
             humidity = random.nextInt(20, 90),
             windSpeed = random.nextDouble(0.0, 25.0),
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            requestId = requestCounter.incrementAndGet(),
+            requestId = requestCounter.incrementAndFetch(),
         )
     }
 
@@ -89,10 +85,9 @@ class ExternalApiController {
      * Get stock price with fluctuating values
      */
     @GetMapping("/stock/{symbol}")
-    suspend fun getStockPrice(
+    fun getStockPrice(
         @PathVariable symbol: String,
     ): StockPrice {
-        delay(3 * timeUnit)
         val basePrice =
             when (symbol.uppercase()) {
                 "AAPL" -> 150.0
@@ -112,7 +107,7 @@ class ExternalApiController {
             changePercent = String.format("%.2f%%", fluctuation * 100),
             volume = random.nextInt(1000000, 10000000),
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            requestId = requestCounter.incrementAndGet(),
+            requestId = requestCounter.incrementAndFetch(),
         )
     }
 
@@ -120,10 +115,9 @@ class ExternalApiController {
      * Get order status with random processing states
      */
     @GetMapping("/order/{orderId}")
-    suspend fun getOrderStatus(
+    fun getOrderStatus(
         @PathVariable orderId: String,
     ): OrderStatus {
-        delay(4 * timeUnit)
         val statuses = listOf("PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED")
         val products = listOf("Laptop", "Phone", "Tablet", "Headphones", "Watch", "Camera")
 
@@ -135,7 +129,7 @@ class ExternalApiController {
             totalAmount = random.nextInt(100, 2000),
             estimatedDelivery = LocalDateTime.now().plusDays(random.nextLong(1, 7)).format(DateTimeFormatter.ISO_LOCAL_DATE),
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            requestId = requestCounter.incrementAndGet(),
+            requestId = requestCounter.incrementAndFetch(),
         )
     }
 
@@ -143,9 +137,8 @@ class ExternalApiController {
      * Get random metrics/analytics data
      */
     @GetMapping("/metrics")
-    suspend fun getMetrics(): Metric {
-        delay(5 * timeUnit)
-        return Metric(
+    fun getMetrics(): Metric =
+        Metric(
             totalUsers = random.nextInt(10000, 100000),
             activeUsers = random.nextInt(1000, 10000),
             revenue = random.nextDouble(10000.0, 500000.0),
@@ -153,7 +146,6 @@ class ExternalApiController {
             serverLoad = String.format("%.1f%%", random.nextDouble(10.0, 90.0)),
             responseTime = "${random.nextInt(50, 500)}ms",
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            requestId = requestCounter.incrementAndGet(),
+            requestId = requestCounter.incrementAndFetch(),
         )
-    }
 }
