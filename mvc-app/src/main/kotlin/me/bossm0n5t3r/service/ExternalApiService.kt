@@ -2,8 +2,6 @@ package me.bossm0n5t3r.service
 
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
@@ -18,7 +16,6 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 class ExternalApiService(
     private val restClient: RestClient,
     private val externalApiResponseRepository: ExternalApiResponseRepository,
-    @param:Qualifier("virtualThreadExecutor") private val taskExecutor: AsyncTaskExecutor,
 ) {
     companion object {
         private const val EXTERNAL_API_BASE_URL = "http://localhost:8082"
@@ -56,20 +53,18 @@ class ExternalApiService(
 
     fun callExternalApiWithNoDatabase(): ExternalApiResponse {
         val uuid = UUID.randomUUID().toString()
-        val userInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/user/$uuid") }
-        val weatherInfoFuture =
-            taskExecutor.submit<String?> { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
-        val stockInfoFuture =
-            taskExecutor.submit<String?> { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
-        val orderInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/order/$uuid") }
-        val metricInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/metrics") }
+        val userInfo = callExternalApi("/api/external/user/$uuid") ?: error("Not found userInfo")
+        val weatherInfo = callExternalApi("/api/external/weather?city=${CITIES.random()}") ?: error("Not found weatherInfo")
+        val stockInfo = callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") ?: error("Not found stockPriceInfo")
+        val orderInfo = callExternalApi("/api/external/order/$uuid") ?: error("Not found orderStatusInfo")
+        val metricInfo = callExternalApi("/api/external/metrics") ?: error("Not found metricInfo")
 
         return ExternalApiResponse(
-            userInfo = userInfoFuture.get() ?: error("Not found userInfo"),
-            weatherInfo = weatherInfoFuture.get() ?: error("Not found weatherInfo"),
-            stockPriceInfo = stockInfoFuture.get() ?: error("Not found stockPriceInfo"),
-            orderStatusInfo = orderInfoFuture.get() ?: error("Not found orderStatusInfo"),
-            metricInfo = metricInfoFuture.get() ?: error("Not found metricInfo"),
+            userInfo = userInfo,
+            weatherInfo = weatherInfo,
+            stockPriceInfo = stockInfo,
+            orderStatusInfo = orderInfo,
+            metricInfo = metricInfo,
         )
     }
 }
