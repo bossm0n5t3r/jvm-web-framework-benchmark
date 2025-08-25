@@ -3,11 +3,12 @@ package me.bossm0n5t3r.webflux
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
 import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBodyOrNull
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 @Component
@@ -35,15 +36,19 @@ class ExternalHandler(
      */
     private suspend fun callExternalApi(endpoint: String): String? =
         try {
-            webClient
-                .get()
-                .uri("${EXTERNAL_API_BASE_URL}$endpoint")
-                .retrieve()
-                .awaitBodyOrNull()
+            callExternalApiAndReturnMono(endpoint).awaitSingleOrNull()
         } catch (e: Exception) {
             println("Failed to call external API at $endpoint: ${e.message}")
             null
         }
+
+    private fun callExternalApiAndReturnMono(endpoint: String): Mono<String> =
+        webClient
+            .get()
+            .uri("${EXTERNAL_API_BASE_URL}$endpoint")
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .onErrorResume { Mono.empty() }
 
     suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse =
         coroutineScope {
@@ -63,4 +68,29 @@ class ExternalHandler(
         }
 
     private suspend fun ReactiveExternalApiResponse.saveDatabase() = externalApiResponseRepository.save(this).awaitSingle()
+
+    fun callExternalApiWithNoDatabaseAndNoCoroutines(): Mono<ReactiveExternalApiResponse> {
+        val uuid = UUID.randomUUID().toString()
+        val userInfoMono = callExternalApiAndReturnMono("/api/external/user/$uuid")
+        val weatherInfoMono = callExternalApiAndReturnMono("/api/external/weather?city=${CITIES.random()}")
+        val stockInfoMono = callExternalApiAndReturnMono("/api/external/stock/${STOCK_SYMBOLS.random()}")
+        val orderInfoMono = callExternalApiAndReturnMono("/api/external/order/$uuid")
+        val metricInfoMono = callExternalApiAndReturnMono("/api/external/metrics")
+        return Mono
+            .zip(
+                userInfoMono,
+                weatherInfoMono,
+                stockInfoMono,
+                orderInfoMono,
+                metricInfoMono,
+            ).map { tuple ->
+                ReactiveExternalApiResponse(
+                    userInfo = tuple.t1,
+                    weatherInfo = tuple.t2,
+                    stockPriceInfo = tuple.t3,
+                    orderStatusInfo = tuple.t4,
+                    metricInfo = tuple.t5,
+                )
+            }
+    }
 }

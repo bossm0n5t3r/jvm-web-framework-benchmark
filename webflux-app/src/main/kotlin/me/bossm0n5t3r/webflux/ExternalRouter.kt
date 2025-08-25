@@ -21,4 +21,7 @@ class ExternalRouter(
 
     @GetMapping("/no-db")
     suspend fun callExternalApiWithNoDatabase() = externalHandler.callExternalApiWithNoDatabase()
+
+    @GetMapping("/no-db/no-coroutines")
+    fun callExternalApiWithNoDatabaseAndNoCoroutines() = externalHandler.callExternalApiWithNoDatabaseAndNoCoroutines()
 }
