@@ -65,11 +65,11 @@ class ExternalApiService(
         val metricInfoFuture = taskExecutor.submit<String?> { callExternalApi("/api/external/metrics") }
 
         return ExternalApiResponse(
-            userInfo = userInfoFuture.get().orEmpty(),
-            weatherInfo = weatherInfoFuture.get().orEmpty(),
-            stockPriceInfo = stockInfoFuture.get().orEmpty(),
-            orderStatusInfo = orderInfoFuture.get().orEmpty(),
-            metricInfo = metricInfoFuture.get().orEmpty(),
+            userInfo = userInfoFuture.get() ?: error("Not found userInfo"),
+            weatherInfo = weatherInfoFuture.get() ?: error("Not found weatherInfo"),
+            stockPriceInfo = stockInfoFuture.get() ?: error("Not found stockPriceInfo"),
+            orderStatusInfo = orderInfoFuture.get() ?: error("Not found orderStatusInfo"),
+            metricInfo = metricInfoFuture.get() ?: error("Not found metricInfo"),
         )
     }
 }
