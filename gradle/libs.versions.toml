@@ -56,8 +56,8 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 kotlinx-dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "kotlinx-dataframe" }
 
 # Coroutines
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor" }
 
 # Database dependencies
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
