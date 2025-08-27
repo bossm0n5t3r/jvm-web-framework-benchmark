@@ -8,7 +8,7 @@ import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
 import java.time.Duration
 
-class WebFluxExternalAPIWithNoDatabaseSimulation : Simulation() {
+class WebFluxSimulation : Simulation() {
     private val webfluxUrl = "http://localhost:8081"
     private val users = 10_000
 

@@ -8,21 +8,21 @@ import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
 import java.time.Duration
 
-class MVCExternalAPIWithNoDatabaseSimulation : Simulation() {
-    private val mvcUrl = "http://localhost:8080"
+class WebFluxWithoutCoroutinesSimulation : Simulation() {
+    private val webfluxUrl = "http://localhost:8081"
     private val users = 10_000
 
-    private val mvcHttpProtocol =
+    private val webfluxHttpProtocol =
         http
-            .baseUrl(mvcUrl)
+            .baseUrl(webfluxUrl)
             .acceptHeader("application/json")
             .contentTypeHeader("application/json")
 
-    private val mvcScenario =
-        scenario("MVC Load Test")
+    private val webfluxScenario =
+        scenario("WebFlux Load Test")
             .exec(
-                http("[MVC] External API with no database")
-                    .get("/mvc/external/no-db")
+                http("[WebFlux] External API with no database")
+                    .get("/webflux/external/no-db/no-coroutines")
                     .check(status().`is`(200)),
             )
 
@@ -30,9 +30,9 @@ class MVCExternalAPIWithNoDatabaseSimulation : Simulation() {
         val rampUsers = rampUsers(users).during(Duration.ofSeconds(10))
 
         setUp(
-            mvcScenario
+            webfluxScenario
                 .injectOpen(rampUsers)
-                .protocols(mvcHttpProtocol),
+                .protocols(webfluxHttpProtocol),
         ).maxDuration(Duration.ofMinutes(3))
             .assertions(
                 global().successfulRequests().percent().gt(0.0), // 95% success rate
