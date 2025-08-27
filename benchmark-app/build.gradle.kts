@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    testImplementation(project(":external-app"))
     api(project(":common"))
 
     // Spring Boot starter for an application framework
