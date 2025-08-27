@@ -1,0 +1,23 @@
+### Health Check
+
+GET http://localhost:8082/api/external/health
+
+### Get User
+
+GET http://localhost:8082/api/external/user/1
+
+### Get Weather
+
+GET http://localhost:8082/api/external/weather
+
+### Get Stock Price
+
+GET http://localhost:8082/api/external/stock/GOOGL
+
+### Get Order Status
+
+GET http://localhost:8082/api/external/order/1
+
+### Get Metrics
+
+GET http://localhost:8082/api/external/metrics
