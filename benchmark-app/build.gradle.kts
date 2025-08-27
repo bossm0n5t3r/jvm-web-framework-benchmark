@@ -3,7 +3,10 @@ plugins {
 }
 
 dependencies {
+    // For Gatling Simulations
     testImplementation(project(":external-app"))
+    testImplementation(project(":webflux-app"))
+
     api(project(":common"))
 
     // Spring Boot starter for an application framework
