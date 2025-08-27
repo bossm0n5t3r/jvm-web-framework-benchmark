@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.mvc
+package me.bossm0n5t3r.controller
 
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.service.ExternalApiService
