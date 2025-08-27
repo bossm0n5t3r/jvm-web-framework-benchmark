@@ -6,19 +6,20 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
+import org.springframework.http.MediaType
 import java.time.Duration
 
 class MVCSimulation : Simulation() {
-    private val mvcUrl = "http://localhost:8080"
+    private val url = "http://localhost:8080"
     private val users = 10_000
 
-    private val mvcHttpProtocol =
+    private val httpProtocol =
         http
-            .baseUrl(mvcUrl)
-            .acceptHeader("application/json")
-            .contentTypeHeader("application/json")
+            .baseUrl(url)
+            .acceptHeader(MediaType.APPLICATION_JSON_VALUE)
+            .contentTypeHeader(MediaType.APPLICATION_JSON_VALUE)
 
-    private val mvcScenario =
+    private val scenario =
         scenario("MVC Load Test")
             .exec(
                 http("[MVC] External API with no database")
@@ -30,12 +31,12 @@ class MVCSimulation : Simulation() {
         val rampUsers = rampUsers(users).during(Duration.ofSeconds(10))
 
         setUp(
-            mvcScenario
+            scenario
                 .injectOpen(rampUsers)
-                .protocols(mvcHttpProtocol),
+                .protocols(httpProtocol),
         ).maxDuration(Duration.ofMinutes(3))
             .assertions(
-                global().successfulRequests().percent().gt(0.0), // 95% success rate
+                global().successfulRequests().percent().gt(60.0), // 95% success rate
             )
     }
 }
