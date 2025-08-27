@@ -36,7 +36,7 @@ class MVCSimulation : Simulation() {
                 .protocols(httpProtocol),
         ).maxDuration(Duration.ofMinutes(3))
             .assertions(
-                global().successfulRequests().percent().gt(60.0), // 95% success rate
+                global().successfulRequests().percent().gt(60.0),
             )
     }
 }
