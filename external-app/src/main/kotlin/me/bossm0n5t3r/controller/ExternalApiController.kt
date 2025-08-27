@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.controller
 
+import kotlinx.coroutines.delay
 import me.bossm0n5t3r.dto.Metric
 import me.bossm0n5t3r.dto.OrderStatus
 import me.bossm0n5t3r.dto.StockPrice
@@ -10,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Mono
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.atomics.AtomicLong
@@ -35,69 +34,68 @@ class ExternalApiController {
      * Health check endpoint with timestamp
      */
     @GetMapping("/health")
-    fun health(): Mono<Map<String, Any>> =
-        Mono.just(
-            mapOf(
-                "status" to "OK",
-                "timestamp" to LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                "requestCount" to requestCounter.incrementAndFetch(),
-                "uptime" to "${random.nextInt(1, 1000)} seconds",
-            ),
+    suspend fun health(): Map<String, Any> =
+        mapOf(
+            "status" to "OK",
+            "timestamp" to LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "requestCount" to requestCounter.incrementAndFetch(),
+            "uptime" to "${random.nextInt(1, 1000)} seconds",
         )
 
     /**
      * Get random user data
      */
     @GetMapping("/user/{id}")
-    fun getUser(
+    suspend fun getUser(
         @PathVariable id: String,
-    ): Mono<User> {
+    ): User {
+        delay(1 * timeUnit)
+
         val names = listOf("Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry")
         val departments = listOf("Engineering", "Marketing", "Sales", "HR", "Finance", "Operations")
 
-        val user =
-            User(
-                id = id,
-                name = names.random(),
-                email = "${names.random().lowercase()}@company.com",
-                department = departments.random(),
-                salary = random.nextInt(50000, 150000),
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndFetch(),
-            )
-
-        return Mono.delay(Duration.ofMillis(1 * timeUnit)).thenReturn(user)
+        return User(
+            id = id,
+            name = names.random(),
+            email = "${names.random().lowercase()}@company.com",
+            department = departments.random(),
+            salary = random.nextInt(50000, 150000),
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
+        )
     }
 
     /**
      * Get weather data with random values
      */
     @GetMapping("/weather")
-    fun getWeather(
+    suspend fun getWeather(
         @RequestParam(defaultValue = "Seoul") city: String,
-    ): Mono<Weather> {
+    ): Weather {
+        delay(2 * timeUnit)
+
         val conditions = listOf("Sunny", "Cloudy", "Rainy", "Snowy", "Partly Cloudy", "Windy")
 
-        val weather =
-            Weather(
-                city = city,
-                temperature = random.nextInt(-10, 35),
-                condition = conditions.random(),
-                humidity = random.nextInt(20, 90),
-                windSpeed = random.nextDouble(0.0, 25.0),
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndFetch(),
-            )
-        return Mono.delay(Duration.ofMillis(2 * timeUnit)).thenReturn(weather)
+        return Weather(
+            city = city,
+            temperature = random.nextInt(-10, 35),
+            condition = conditions.random(),
+            humidity = random.nextInt(20, 90),
+            windSpeed = random.nextDouble(0.0, 25.0),
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
+        )
     }
 
     /**
      * Get stock price with fluctuating values
      */
     @GetMapping("/stock/{symbol}")
-    fun getStockPrice(
+    suspend fun getStockPrice(
         @PathVariable symbol: String,
-    ): Mono<StockPrice> {
+    ): StockPrice {
+        delay(3 * timeUnit)
+
         val basePrice =
             when (symbol.uppercase()) {
                 "AAPL" -> 150.0
@@ -110,59 +108,57 @@ class ExternalApiController {
         val fluctuation = random.nextDouble(-0.1, 0.1) // ±10%
         val currentPrice = basePrice * (1 + fluctuation)
 
-        val stockPrice =
-            StockPrice(
-                symbol = symbol.uppercase(),
-                price = String.format("%.2f", currentPrice),
-                change = String.format("%.2f", basePrice * fluctuation),
-                changePercent = String.format("%.2f%%", fluctuation * 100),
-                volume = random.nextInt(1000000, 10000000),
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndFetch(),
-            )
-        return Mono.delay(Duration.ofMillis(3 * timeUnit)).thenReturn(stockPrice)
+        return StockPrice(
+            symbol = symbol.uppercase(),
+            price = String.format("%.2f", currentPrice),
+            change = String.format("%.2f", basePrice * fluctuation),
+            changePercent = String.format("%.2f%%", fluctuation * 100),
+            volume = random.nextInt(1000000, 10000000),
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
+        )
     }
 
     /**
      * Get order status with random processing states
      */
     @GetMapping("/order/{orderId}")
-    fun getOrderStatus(
+    suspend fun getOrderStatus(
         @PathVariable orderId: String,
-    ): Mono<OrderStatus> {
+    ): OrderStatus {
+        delay(4 * timeUnit)
+
         val statuses = listOf("PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED")
         val products = listOf("Laptop", "Phone", "Tablet", "Headphones", "Watch", "Camera")
 
-        val orderStatus =
-            OrderStatus(
-                orderId = orderId,
-                status = statuses.random(),
-                product = products.random(),
-                quantity = random.nextInt(1, 5),
-                totalAmount = random.nextInt(100, 2000),
-                estimatedDelivery = LocalDateTime.now().plusDays(random.nextLong(1, 7)).format(DateTimeFormatter.ISO_LOCAL_DATE),
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndFetch(),
-            )
-        return Mono.delay(Duration.ofMillis(4 * timeUnit)).thenReturn(orderStatus)
+        return OrderStatus(
+            orderId = orderId,
+            status = statuses.random(),
+            product = products.random(),
+            quantity = random.nextInt(1, 5),
+            totalAmount = random.nextInt(100, 2000),
+            estimatedDelivery = LocalDateTime.now().plusDays(random.nextLong(1, 7)).format(DateTimeFormatter.ISO_LOCAL_DATE),
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
+        )
     }
 
     /**
      * Get random metrics/analytics data
      */
     @GetMapping("/metrics")
-    fun getMetrics(): Mono<Metric> {
-        val metric =
-            Metric(
-                totalUsers = random.nextInt(10000, 100000),
-                activeUsers = random.nextInt(1000, 10000),
-                revenue = random.nextDouble(10000.0, 500000.0),
-                conversionRate = String.format("%.2f%%", random.nextDouble(1.0, 10.0)),
-                serverLoad = String.format("%.1f%%", random.nextDouble(10.0, 90.0)),
-                responseTime = "${random.nextInt(50, 500)}ms",
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                requestId = requestCounter.incrementAndFetch(),
-            )
-        return Mono.delay(Duration.ofMillis(5 * timeUnit)).thenReturn(metric)
+    suspend fun getMetrics(): Metric {
+        delay(5 * timeUnit)
+
+        return Metric(
+            totalUsers = random.nextInt(10000, 100000),
+            activeUsers = random.nextInt(1000, 10000),
+            revenue = random.nextDouble(10000.0, 500000.0),
+            conversionRate = String.format("%.2f%%", random.nextDouble(1.0, 10.0)),
+            serverLoad = String.format("%.1f%%", random.nextDouble(10.0, 90.0)),
+            responseTime = "${random.nextInt(50, 500)}ms",
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            requestId = requestCounter.incrementAndFetch(),
+        )
     }
 }
