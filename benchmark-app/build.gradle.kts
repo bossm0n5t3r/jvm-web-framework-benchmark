@@ -6,6 +6,7 @@ dependencies {
     // For Gatling Simulations
     testImplementation(project(":external-app"))
     testImplementation(project(":mvc-app"))
+    testImplementation(project(":mvc-without-virtual-thread-app"))
     testImplementation(project(":webflux-app"))
 
     api(project(":common"))
