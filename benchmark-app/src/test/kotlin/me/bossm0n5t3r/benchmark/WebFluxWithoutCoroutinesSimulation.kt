@@ -6,19 +6,20 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
+import org.springframework.http.MediaType
 import java.time.Duration
 
 class WebFluxWithoutCoroutinesSimulation : Simulation() {
-    private val webfluxUrl = "http://localhost:8081"
+    private val url = "http://localhost:8081"
     private val users = 10_000
 
-    private val webfluxHttpProtocol =
+    private val httpProtocol =
         http
-            .baseUrl(webfluxUrl)
-            .acceptHeader("application/json")
-            .contentTypeHeader("application/json")
+            .baseUrl(url)
+            .acceptHeader(MediaType.APPLICATION_JSON_VALUE)
+            .contentTypeHeader(MediaType.APPLICATION_JSON_VALUE)
 
-    private val webfluxScenario =
+    private val scenario =
         scenario("WebFlux Load Test")
             .exec(
                 http("[WebFlux] External API with no database")
@@ -30,12 +31,12 @@ class WebFluxWithoutCoroutinesSimulation : Simulation() {
         val rampUsers = rampUsers(users).during(Duration.ofSeconds(10))
 
         setUp(
-            webfluxScenario
+            scenario
                 .injectOpen(rampUsers)
-                .protocols(webfluxHttpProtocol),
+                .protocols(httpProtocol),
         ).maxDuration(Duration.ofMinutes(3))
             .assertions(
-                global().successfulRequests().percent().gt(0.0), // 95% success rate
+                global().successfulRequests().percent().gt(60.0),
             )
     }
 }
