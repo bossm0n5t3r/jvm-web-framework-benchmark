@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: mvc-without-virtual-thread-app
+
+  # JPA Configuration for Spring MVC
+  datasource:
+    url: jdbc:postgresql://localhost:5432/benchmark
+    username: benchmark_user
+    password: benchmark_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8083
+
+# Logging configuration
+logging:
+  level:
+    root: WARN
+    me.bossm0n5t3r: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

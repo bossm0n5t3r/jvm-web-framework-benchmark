@@ -5,6 +5,7 @@ rootProject.name = "jvm-web-framework-benchmark"
 
 include("common")
 include("mvc-app")
+include("mvc-without-virtual-thread-app")
 include("webflux-app")
 include("benchmark-app")
 include("external-app")
