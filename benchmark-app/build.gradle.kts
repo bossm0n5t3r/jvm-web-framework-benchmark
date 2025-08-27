@@ -68,6 +68,7 @@ val copyGatlingReports =
                     when {
                         name.startsWith("externalappsimulation-") -> "external-app"
                         name.startsWith("mvcsimulation-") -> "mvc"
+                        name.startsWith("mvcwithoutvirtualthreadsimulation-") -> "mvc-without-virtual-thread"
                         name.startsWith("webfluxsimulation-") -> "webflux"
                         name.startsWith("webfluxwithoutcoroutinessimulation-") -> "webflux-without-coroutines"
                         else -> null
