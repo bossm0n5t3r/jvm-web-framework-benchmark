@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.mvc
+package me.bossm0n5t3r.controller
 
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.entity.User
@@ -20,7 +20,7 @@ import java.time.LocalDateTime
  * Spring MVC Controller for traditional blocking operations
  */
 @RestController
-@RequestMapping("/mvc/users")
+@RequestMapping("/mvc-without-virtual-thread/users")
 class UserController(
     private val userRepository: UserRepository,
 ) {

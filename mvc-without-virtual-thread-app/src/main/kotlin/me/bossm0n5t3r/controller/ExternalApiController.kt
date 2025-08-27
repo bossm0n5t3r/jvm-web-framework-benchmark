@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.mvc
+package me.bossm0n5t3r.controller
 
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.service.ExternalApiService
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
  * It facilitates integration with external systems and provides methods for retrieving the results.
  */
 @RestController
-@RequestMapping("/mvc/external")
+@RequestMapping("/mvc-without-virtual-thread/external")
 class ExternalApiController(
     private val externalApiService: ExternalApiService,
 ) {
