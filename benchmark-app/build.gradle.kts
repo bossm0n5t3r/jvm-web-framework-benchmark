@@ -5,6 +5,7 @@ plugins {
 dependencies {
     // For Gatling Simulations
     testImplementation(project(":external-app"))
+    testImplementation(project(":mvc-app"))
     testImplementation(project(":webflux-app"))
 
     api(project(":common"))
