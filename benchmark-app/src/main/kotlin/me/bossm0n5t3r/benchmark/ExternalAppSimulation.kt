@@ -7,11 +7,13 @@ import io.gatling.javaapi.core.ScenarioBuilder
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
+import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
+import me.bossm0n5t3r.benchmark.Constants.EXTERNAL_APP_URL
 import java.time.Duration
 import java.util.UUID
 
 class ExternalAppSimulation : Simulation() {
-    private val url = "http://localhost:8082"
+    private val url = EXTERNAL_APP_URL
     private val users = 10_000
     private val cities = listOf("Seoul", "London", "New York", "Tokyo")
     private val stockSymbols = listOf("AAPL", "GOOGL", "TSLA", "MSFT")
@@ -19,8 +21,8 @@ class ExternalAppSimulation : Simulation() {
     private val httpProtocol =
         http
             .baseUrl(url)
-            .acceptHeader("application/json")
-            .contentTypeHeader("application/json")
+            .acceptHeader(APPLICATION_JSON)
+            .contentTypeHeader(APPLICATION_JSON)
 
     private val scenario: ScenarioBuilder
         get() {

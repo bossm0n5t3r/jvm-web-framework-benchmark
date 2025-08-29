@@ -6,24 +6,25 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
-import org.springframework.http.MediaType
+import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
+import me.bossm0n5t3r.benchmark.Constants.MVC_URL
 import java.time.Duration
 
-class WebFluxSimulation : Simulation() {
-    private val url = "http://localhost:8081"
+class MVCSimulation : Simulation() {
+    private val url = MVC_URL
     private val users = 10_000
 
     private val httpProtocol =
         http
             .baseUrl(url)
-            .acceptHeader(MediaType.APPLICATION_JSON_VALUE)
-            .contentTypeHeader(MediaType.APPLICATION_JSON_VALUE)
+            .acceptHeader(APPLICATION_JSON)
+            .contentTypeHeader(APPLICATION_JSON)
 
     private val scenario =
-        scenario("WebFlux Load Test")
+        scenario("MVC Load Test")
             .exec(
-                http("[WebFlux] External API with no database")
-                    .get("/webflux/external/no-db")
+                http("[MVC] External API with no database")
+                    .get("/mvc/external/no-db")
                     .check(status().`is`(200)),
             )
 

@@ -6,18 +6,19 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
-import org.springframework.http.MediaType
+import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
+import me.bossm0n5t3r.benchmark.Constants.WEBFLUX_URL
 import java.time.Duration
 
 class WebFluxWithoutCoroutinesSimulation : Simulation() {
-    private val url = "http://localhost:8081"
+    private val url = WEBFLUX_URL
     private val users = 10_000
 
     private val httpProtocol =
         http
             .baseUrl(url)
-            .acceptHeader(MediaType.APPLICATION_JSON_VALUE)
-            .contentTypeHeader(MediaType.APPLICATION_JSON_VALUE)
+            .acceptHeader(APPLICATION_JSON)
+            .contentTypeHeader(APPLICATION_JSON)
 
     private val scenario =
         scenario("WebFlux Load Test")

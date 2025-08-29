@@ -6,18 +6,19 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
-import org.springframework.http.MediaType
+import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
+import me.bossm0n5t3r.benchmark.Constants.MVC_WITHOUT_VIRTUAL_THREAD_URL
 import java.time.Duration
 
 class MVCWithoutVirtualThreadSimulation : Simulation() {
-    private val url = "http://localhost:8083"
+    private val url = MVC_WITHOUT_VIRTUAL_THREAD_URL
     private val users = 10_000
 
     private val httpProtocol =
         http
             .baseUrl(url)
-            .acceptHeader(MediaType.APPLICATION_JSON_VALUE)
-            .contentTypeHeader(MediaType.APPLICATION_JSON_VALUE)
+            .acceptHeader(APPLICATION_JSON)
+            .contentTypeHeader(APPLICATION_JSON)
 
     private val mvcScenario =
         scenario("MVC without Virtual Thread Load Test")
