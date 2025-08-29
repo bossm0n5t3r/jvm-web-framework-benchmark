@@ -4,10 +4,10 @@ plugins {
 
 dependencies {
     // For Gatling Simulations
-    testImplementation(project(":external-app"))
-    testImplementation(project(":mvc-app"))
-    testImplementation(project(":mvc-without-virtual-thread-app"))
-    testImplementation(project(":webflux-app"))
+    implementation(project(":external-app"))
+    implementation(project(":mvc-app"))
+    implementation(project(":mvc-without-virtual-thread-app"))
+    implementation(project(":webflux-app"))
 
     api(project(":common"))
 
