@@ -15,10 +15,11 @@ jvm-web-framework-benchmark/
 │       │   ├── StockPrice.kt             # 주식 가격 DTO
 │       │   ├── OrderStatus.kt            # 주문 상태 DTO
 │       │   └── Metric.kt                 # 메트릭 DTO
-│       └── table/                        # 데이터베이스 테이블 설정
-│           ├── UserTable.kt              # 사용자 테이블
-│           └── ExternalApiResponseTable.kt # 외부 API 응답 테이블
-├── mvc-app/                              # Spring MVC 애플리케이션 (포트: 8080)
+│       ├── table/                        # 데이터베이스 테이블 설정
+│       │   ├── UserTable.kt              # 사용자 테이블
+│       │   └── ExternalApiResponseTable.kt # 외부 API 응답 테이블
+│       └── util/                         # 공통 유틸리티 클래스
+├── mvc-app/                              # Spring MVC 애플리케이션 (Virtual Thread 사용, 포트: 8080)
 │   └── src/main/kotlin/me/bossm0n5t3r/
 │       ├── MvcApplication.kt             # Spring MVC 메인 애플리케이션
 │       ├── entity/                       # JPA 엔티티
@@ -27,7 +28,23 @@ jvm-web-framework-benchmark/
 │       ├── config/                       # 설정 클래스
 │       │   ├── JpaConfig.kt              # JPA 설정
 │       │   └── VirtualThreadConfig.kt    # Virtual Thread 설정
-│       ├── mvc/                          # MVC 컨트롤러
+│       ├── controller/                   # MVC 컨트롤러
+│       │   ├── UserController.kt         # 사용자 REST 컨트롤러
+│       │   └── ExternalApiController.kt  # 외부 API 컨트롤러
+│       ├── repository/                   # JPA 리포지토리
+│       │   ├── UserRepository.kt         # 사용자 리포지토리
+│       │   └── ExternalApiResponseRepository.kt # 외부 API 응답 리포지토리
+│       └── service/
+│           └── ExternalApiService.kt     # 외부 API 서비스
+├── mvc-without-virtual-thread-app/       # Spring MVC 애플리케이션 (Virtual Thread 미사용, 포트: 8083)
+│   └── src/main/kotlin/me/bossm0n5t3r/
+│       ├── MvcWithoutVirtualThreadApplication.kt # Spring MVC 메인 애플리케이션 (Virtual Thread 미사용)
+│       ├── entity/                       # JPA 엔티티
+│       │   ├── User.kt                   # 사용자 JPA 엔티티
+│       │   └── ExternalApiResponse.kt    # 외부 API 응답 JPA 엔티티
+│       ├── config/                       # 설정 클래스
+│       │   └── JpaConfig.kt              # JPA 설정
+│       ├── controller/                   # MVC 컨트롤러
 │       │   ├── UserController.kt         # 사용자 REST 컨트롤러
 │       │   └── ExternalApiController.kt  # 외부 API 컨트롤러
 │       ├── repository/                   # JPA 리포지토리
@@ -58,14 +75,25 @@ jvm-web-framework-benchmark/
 │       └── controller/
 │           └── ExternalApiController.kt  # 외부 API 시뮬레이션 컨트롤러
 ├── benchmark-app/                        # 성능 벤치마크 애플리케이션
+│   ├── README.md                         # 벤치마크 상세 가이드
 │   └── src/main/kotlin/me/bossm0n5t3r/benchmark/
-│       ├── BenchmarkApplication.kt       # 벤치마크 메인 애플리케이션
-│       ├── WebFrameworkBenchmark.kt      # 벤치마크 테스트 실행기
-│       ├── BenchmarkResult.kt            # 벤치마크 결과 데이터 클래스
-│       └── BenchmarkScenario.kt          # 벤치마크 시나리오
+│       ├── Constants.kt                  # 벤치마크 상수 정의
+│       ├── WebFrameworkBenchmark.kt      # 커스텀 벤치마크 도구
+│       ├── ExternalAppSimulation.kt      # Gatling 외부 API 시뮬레이션
+│       ├── MVCSimulation.kt              # Gatling MVC 시뮬레이션
+│       ├── MVCWithoutVirtualThreadSimulation.kt # Gatling MVC (Virtual Thread 미사용) 시뮬레이션
+│       ├── WebFluxSimulation.kt          # Gatling WebFlux 시뮬레이션
+│       └── WebFluxWithoutCoroutinesSimulation.kt # Gatling WebFlux (Coroutines 미사용) 시뮬레이션
+├── reports/                              # Gatling 성능 테스트 보고서
+│   └── gatling/
+│       ├── external-app/                 # 외부 API 성능 보고서
+│       ├── mvc/                          # MVC 성능 보고서
+│       ├── mvc-without-virtual-thread/   # MVC (Virtual Thread 미사용) 성능 보고서
+│       ├── webflux/                      # WebFlux 성능 보고서
+│       └── webflux-without-coroutines/   # WebFlux (Coroutines 미사용) 성능 보고서
+├── http/                                 # HTTP 요청 테스트 파일들
 ├── docker-compose.yaml                   # PostgreSQL 데이터베이스 설정
 ├── init.sql                              # 데이터베이스 초기화 스크립트
-├── test_external_api.sh                  # 외부 API 테스트 스크립트
 ├── benchmark.md                          # 벤치마크 결과 리포트
 └── build.gradle.kts                      # 루트 빌드 설정
 ```
@@ -74,23 +102,29 @@ jvm-web-framework-benchmark/
 
 ### 모듈 설명
 
-- **common**: 공통으로 사용되는 DTO 클래스들과 데이터베이스 테이블 설정을 포함
+- **common**: 공통으로 사용되는 DTO 클래스들, 데이터베이스 테이블 설정, 유틸리티 클래스를 포함
 - **mvc-app**: Spring MVC 기반의 전통적인 블로킹 웹 애플리케이션 (포트: 8080)
   - JPA + Hibernate를 사용한 데이터베이스 연동
   - Virtual Thread 지원으로 성능 최적화
   - 외부 API 호출 및 응답 저장 기능
+- **mvc-without-virtual-thread-app**: Spring MVC 기반의 전통적인 블로킹 웹 애플리케이션 (포트: 8083)
+  - JPA + Hibernate를 사용한 데이터베이스 연동
+  - Virtual Thread 미사용으로 기존 Thread Pool 방식 사용
+  - mvc-app와 동일한 기능이지만 Virtual Thread 성능 비교용
 - **webflux-app**: Spring WebFlux 기반의 리액티브 웹 애플리케이션 (포트: 8081)
   - Spring Data R2DBC를 사용한 비동기 데이터베이스 연동
   - 완전한 논블로킹 I/O 처리
   - 외부 API 호출 및 응답 저장 기능
+  - Coroutines 사용 및 미사용 방식 모두 지원
 - **external-app**: 외부 API 시뮬레이션 애플리케이션 (포트: 8082)
   - 벤치마크 테스트용 외부 서비스 시뮬레이션
   - 데이터베이스 연결 없는 순수 API 응답 제공
   - 다양한 도메인(사용자, 날씨, 주식, 주문, 메트릭) 데이터 제공
-- **benchmark-app**: 세 애플리케이션의 성능을 비교하는 벤치마크 도구
-  - MVC vs WebFlux 성능 비교
-  - 외부 API 호출 성능 측정
-  - 상세한 통계 분석 및 리포트 생성
+- **benchmark-app**: 모든 애플리케이션의 성능을 비교하는 벤치마크 도구
+  - **Gatling 시뮬레이션**: 5가지 시나리오별 부하 테스트 (MVC, MVC without Virtual Thread, WebFlux, WebFlux without Coroutines, External
+    App)
+  - 처리량, 응답시간, 성공률 등 다양한 메트릭 측정
+  - HTML 리포트 생성 및 통계 분석
 
 ### Spring Boot Docker Compose 통합
 
@@ -101,8 +135,11 @@ jvm-web-framework-benchmark/
 각 모듈은 독립적으로 실행할 수 있습니다:
 
 ```bash
-# Spring MVC 애플리케이션 실행 (포트 8080)
+# Spring MVC 애플리케이션 실행 (Virtual Thread 사용, 포트 8080)
 ./gradlew mvc-app:bootRun
+
+# Spring MVC 애플리케이션 실행 (Virtual Thread 미사용, 포트 8083)
+./gradlew mvc-without-virtual-thread-app:bootRun
 
 # Spring WebFlux 애플리케이션 실행 (포트 8081)
 ./gradlew webflux-app:bootRun
@@ -112,6 +149,7 @@ jvm-web-framework-benchmark/
 
 # 벤치마크를 위해 모든 애플리케이션 동시 실행
 ./gradlew mvc-app:bootRun &
+./gradlew mvc-without-virtual-thread-app:bootRun &
 ./gradlew webflux-app:bootRun &
 ./gradlew external-app:bootRun &
 ```
@@ -139,15 +177,17 @@ docker-compose down
 
 ### 3. 접근 URL
 
-- Spring MVC: `http://localhost:8080`
+- Spring MVC (Virtual Thread 사용): `http://localhost:8080`
 - Spring WebFlux: `http://localhost:8081`
 - External API 시뮬레이션: `http://localhost:8082`
+- Spring MVC (Virtual Thread 미사용): `http://localhost:8083`
 
 ## 📡 API 엔드포인트
 
 ### Spring MVC 엔드포인트 (전통적인 블로킹 방식) - 포트 8080
 
 #### 사용자 관리 API
+
 - `GET http://localhost:8080/mvc/users` - 모든 사용자 조회
 - `GET http://localhost:8080/mvc/users/{id}` - ID로 사용자 조회
 - `GET http://localhost:8080/mvc/users/search?name={name}` - 이름으로 사용자 검색
@@ -157,6 +197,7 @@ docker-compose down
 - `DELETE http://localhost:8080/mvc/users/{id}` - 사용자 삭제
 
 #### 외부 API 호출
+
 - `GET http://localhost:8080/mvc/external/user/{id}` - 외부 API에서 사용자 정보 조회
 - `GET http://localhost:8080/mvc/external/weather?city={city}` - 외부 API에서 날씨 정보 조회
 - `GET http://localhost:8080/mvc/external/stock/{symbol}` - 외부 API에서 주식 정보 조회
@@ -166,6 +207,7 @@ docker-compose down
 ### Spring WebFlux 엔드포인트 (리액티브 방식) - 포트 8081
 
 #### 사용자 관리 API
+
 - `GET http://localhost:8081/webflux/users` - 모든 사용자 조회
 - `GET http://localhost:8081/webflux/users/{id}` - ID로 사용자 조회
 - `GET http://localhost:8081/webflux/users/search?name={name}` - 이름으로 사용자 검색
@@ -175,59 +217,104 @@ docker-compose down
 - `DELETE http://localhost:8081/webflux/users/{id}` - 사용자 삭제
 
 #### 외부 API 호출
+
 - `GET http://localhost:8081/webflux/external/user/{id}` - 외부 API에서 사용자 정보 조회
 - `GET http://localhost:8081/webflux/external/weather?city={city}` - 외부 API에서 날씨 정보 조회
 - `GET http://localhost:8081/webflux/external/stock/{symbol}` - 외부 API에서 주식 정보 조회
 - `GET http://localhost:8081/webflux/external/order/{orderId}` - 외부 API에서 주문 상태 조회
 - `GET http://localhost:8081/webflux/external/metrics` - 외부 API에서 메트릭 정보 조회
 
+### Spring MVC 엔드포인트 (Virtual Thread 미사용) - 포트 8083
+
+#### 사용자 관리 API
+
+- `GET http://localhost:8083/mvc/users` - 모든 사용자 조회
+- `GET http://localhost:8083/mvc/users/{id}` - ID로 사용자 조회
+- `GET http://localhost:8083/mvc/users/search?name={name}` - 이름으로 사용자 검색
+- `GET http://localhost:8083/mvc/users/email/{email}` - 이메일로 사용자 조회
+- `POST http://localhost:8083/mvc/users` - 사용자 생성
+- `PUT http://localhost:8083/mvc/users/{id}` - 사용자 업데이트
+- `DELETE http://localhost:8083/mvc/users/{id}` - 사용자 삭제
+
+#### 외부 API 호출
+
+- `GET http://localhost:8083/mvc/external/user/{id}` - 외부 API에서 사용자 정보 조회
+- `GET http://localhost:8083/mvc/external/weather?city={city}` - 외부 API에서 날씨 정보 조회
+- `GET http://localhost:8083/mvc/external/stock/{symbol}` - 외부 API에서 주식 정보 조회
+- `GET http://localhost:8083/mvc/external/order/{orderId}` - 외부 API에서 주문 상태 조회
+- `GET http://localhost:8083/mvc/external/metrics` - 외부 API에서 메트릭 정보 조회
+
 ### 외부 API 시뮬레이션 엔드포인트 - 포트 8082
 
 #### 기본 상태 확인
+
 - `GET http://localhost:8082/api/external/health` - 헬스 체크 (상태, 타임스탬프, 요청 카운트)
 
 #### 사용자 정보
+
 - `GET http://localhost:8082/api/external/user/{id}` - 랜덤 사용자 정보 반환
   - 응답: 사용자 ID, 이름, 이메일, 부서, 급여, 타임스탬프
 
 #### 날씨 정보
+
 - `GET http://localhost:8082/api/external/weather?city={city}` - 날씨 정보 반환 (기본값: Seoul)
   - 응답: 도시명, 온도, 날씨 상태, 습도, 풍속, 타임스탬프
 
 #### 주식 정보
+
 - `GET http://localhost:8082/api/external/stock/{symbol}` - 주식 가격 정보 반환
   - 지원 심볼: AAPL, GOOGL, TSLA, MSFT (기타는 기본값)
   - 응답: 심볼, 현재가, 변동폭, 변동률, 거래량, 타임스탬프
 
 #### 주문 상태
+
 - `GET http://localhost:8082/api/external/order/{orderId}` - 주문 상태 정보 반환
   - 응답: 주문 ID, 상태, 상품명, 수량, 총액, 예상 배송일, 타임스탬프
 
 #### 메트릭/분석 데이터
+
 - `GET http://localhost:8082/api/external/metrics` - 시스템 메트릭 정보 반환
   - 응답: 총 사용자 수, 활성 사용자 수, 수익, 전환율, 서버 부하, 응답 시간, 타임스탬프
 
 ## 📊 벤치마크 실행
 
-성능 벤치마크 실행 방법:
+이 프로젝트는 두 가지 벤치마크 도구를 제공합니다:
 
-### 1. 준비 단계
+### 방법 1: 커스텀 벤치마크 도구 (WebFrameworkBenchmark.kt)
 
-벤치마크 실행을 위해 세 개의 애플리케이션을 모두 실행해야 합니다:
+#### 1-1. 준비 단계
+
+벤치마크 실행을 위해 필요한 애플리케이션들을 실행합니다:
 
 ```bash
-# 세 애플리케이션을 백그라운드로 실행
+# 기본 비교용 (MVC vs WebFlux)
 ./gradlew mvc-app:bootRun &
+./gradlew webflux-app:bootRun &
+
+# 모든 애플리케이션 포함 비교 (권장)
+./gradlew mvc-app:bootRun &
+./gradlew mvc-without-virtual-thread-app:bootRun &
 ./gradlew webflux-app:bootRun &
 ./gradlew external-app:bootRun &
 
 # 모든 애플리케이션이 완전히 시작될 때까지 대기 (약 30-60초)
 ```
 
-### 2. 벤치마크 실행
+### 방법 2: Gatling 시뮬레이션
+
+#### 2-1. Gatling 시뮬레이션 실행
 
 ```bash
-./gradlew benchmark-app:bootRun
+./gradlew gatlingRun
+
+> Task :benchmark-app:gatlingRun
+Choose a simulation number:
+     [0] me.bossm0n5t3r.benchmark.ExternalAppSimulation # 외부 API 애플리케이션 테스트
+     [1] me.bossm0n5t3r.benchmark.MVCSimulation # MVC 애플리케이션 테스트 (Virtual Thread 사용)
+     [2] me.bossm0n5t3r.benchmark.MVCWithoutVirtualThreadSimulation # MVC 애플리케이션 테스트 (Virtual Thread 미사용)
+     [3] me.bossm0n5t3r.benchmark.WebFluxSimulation # WebFlux 애플리케이션 테스트
+     [4] me.bossm0n5t3r.benchmark.WebFluxWithoutCoroutinesSimulation # WebFlux 애플리케이션 테스트 (Coroutines 미사용)
+# 숫자 입력
 ```
 
 벤치마크는 다음 시나리오들의 성능을 측정합니다:
@@ -319,21 +406,32 @@ curl -X DELETE http://localhost:8080/mvc/users/1
 
 ## 🏛️ 아키텍처
 
-### Spring MVC (Traditional Blocking)
+### Spring MVC with Virtual Thread (Modern Blocking) - 포트 8080
 
 - **Database**: JPA + Hibernate (JDBC)
 - **Connection Pool**: HikariCP
-- **Threading Model**: Thread-per-request
+- **Threading Model**: Virtual Thread (Project Loom)
 - **Entity**: `User` (JPA annotations)
 - **Repository**: `UserRepository` (JpaRepository)
+- **Performance**: 고성능 블로킹 I/O, 메모리 효율적인 경량 스레드
 
-### Spring WebFlux (Reactive Non-blocking)
+### Spring MVC without Virtual Thread (Traditional Blocking) - 포트 8083
+
+- **Database**: JPA + Hibernate (JDBC)
+- **Connection Pool**: HikariCP
+- **Threading Model**: Platform Thread (Thread-per-request)
+- **Entity**: `User` (JPA annotations)
+- **Repository**: `UserRepository` (JpaRepository)
+- **Performance**: 전통적인 블로킹 I/O, 높은 메모리 사용량
+
+### Spring WebFlux (Reactive Non-blocking) - 포트 8081
 
 - **Database**: Spring Data R2DBC
 - **Connection Pool**: R2DBC Connection Pool
 - **Threading Model**: Event Loop (Reactor Netty)
 - **Entity**: `ReactiveUser` (R2DBC annotations)
 - **Repository**: `ReactiveUserRepository` (ReactiveCrudRepository)
+- **Performance**: 완전한 비동기 논블로킹 I/O, 높은 동시성 처리
 
 ## 📈 성능 비교 포인트
 
