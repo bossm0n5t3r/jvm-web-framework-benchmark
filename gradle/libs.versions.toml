@@ -1,23 +1,19 @@
 [versions]
-kotlin = "2.2.10"
+kotlin = "2.2.21"
 jdk-version = "24"
 ktlint-gradle = "13.0.0"
 pinterest-ktlint = "1.7.1"
-spring-boot = "3.5.4"
+spring-boot = "3.5.7"
 spring-dependency-management-version = "1.1.7"
 
-postgresql = "42.7.7"
-r2dbc-postgresql = "1.0.7.RELEASE"
+postgresql = "42.7.8"
+r2dbc-postgresql = "1.1.0.RELEASE"
 
-kotlinx-coroutines = "1.10.2"
-kotlinx-dataframe = "1.0.0-Beta2"
-jackson = "2.19.2"
+netty-resolver-dns-native-macos-version = "4.2.7.Final"
 
-netty-resolver-dns-native-macos-version = "4.2.4.Final"
+gatling = "3.14.7"
 
-gatling = "3.13.5"
-
-httpclient5 = "5.5"
+httpclient5 = "5.5.1"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -37,7 +33,6 @@ gatling-gradle = { id = "io.gatling.gradle", version.ref = "gatling" }
 
 [libraries]
 # Kotlin libraries
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
 # Spring Boot dependencies
@@ -48,12 +43,6 @@ spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-
 spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-
-# JSON processing
-jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-
-# Math and statistics
-kotlinx-dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "kotlinx-dataframe" }
 
 # Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
