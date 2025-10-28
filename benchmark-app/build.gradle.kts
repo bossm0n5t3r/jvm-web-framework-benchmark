@@ -14,10 +14,6 @@ dependencies {
     implementation(libs.gatling.charts.highcharts)
 }
 
-tasks.bootJar {
-    enabled = false
-}
-
 // Gatling 리포트를 프로젝트 루트의 'gatling-reports' 디렉터리로 복사하는 태스크를 정의합니다.
 val copyGatlingReports =
     tasks.register("copyGatlingReports") {

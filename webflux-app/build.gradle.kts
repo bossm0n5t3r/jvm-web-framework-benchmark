@@ -1,8 +1,16 @@
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.plugin.spring)
+    alias(libs.plugins.kotlin.plugin.jpa)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
 dependencies {
     api(project(":common"))
 
     // Spring Boot starters
-    implementation(libs.spring.boot.starter.webflux)
+    api(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.data.r2dbc)
     developmentOnly(libs.spring.boot.docker.compose)
 

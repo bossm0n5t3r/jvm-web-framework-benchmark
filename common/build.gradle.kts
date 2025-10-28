@@ -2,11 +2,3 @@
 dependencies {
     // No specific dependencies needed for basic DTOs
 }
-
-tasks.bootRun {
-    enabled = false
-}
-
-tasks.bootJar {
-    enabled = false
-}
