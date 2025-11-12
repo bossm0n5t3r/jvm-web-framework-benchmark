@@ -10,7 +10,7 @@ dependencies {
     api(project(":common"))
 
     // Spring Boot starters
-    api(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.data.r2dbc)
     developmentOnly(libs.spring.boot.docker.compose)
 
