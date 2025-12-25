@@ -12,13 +12,15 @@ import java.time.LocalDateTime
 @Table("users")
 data class ReactiveUser(
     @Id
-    override val id: Long = 0,
+    val id: Long = 0,
     @Column("name")
-    override val name: String,
+    override var name: String,
     @Column("email")
-    override val email: String,
+    override var email: String,
     @Column("created_at")
-    override val createdAt: LocalDateTime = LocalDateTime.now(),
+    override var createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
-    override val updatedAt: LocalDateTime = LocalDateTime.now(),
-) : UserTable
+    override var updatedAt: LocalDateTime = LocalDateTime.now(),
+) : UserTable {
+    override val notNullId: Long = id
+}

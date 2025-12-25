@@ -79,11 +79,11 @@ class UserController(
         val existingUser = userRepository.findById(id)
         return if (existingUser.isPresent) {
             val updatedUser =
-                existingUser.get().copy(
-                    name = userRequest.name,
-                    email = userRequest.email,
-                    updatedAt = LocalDateTime.now(),
-                )
+                existingUser.get().apply {
+                    name = userRequest.name
+                    email = userRequest.email
+                    updatedAt = LocalDateTime.now()
+                }
             val savedUser = userRepository.save(updatedUser)
             ResponseEntity.ok(savedUser)
         } else {

@@ -14,16 +14,20 @@ import java.time.LocalDateTime
  */
 @Entity
 @Table(name = "users")
-data class User(
+open class User(
+    @Column(nullable = false)
+    override var name: String,
+    @Column(nullable = false)
+    override var email: String,
+    @Column(name = "created_at")
+    override var createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "updated_at")
+    override var updatedAt: LocalDateTime = LocalDateTime.now(),
+) : UserTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long = 0,
-    @Column(nullable = false)
-    override val name: String,
-    @Column(nullable = false)
-    override val email: String,
-    @Column(name = "created_at")
-    override val createdAt: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "updated_at")
-    override val updatedAt: LocalDateTime = LocalDateTime.now(),
-) : UserTable
+    var id: Long? = null
+        protected set
+
+    override val notNullId: Long = requireNotNull(id)
+}
