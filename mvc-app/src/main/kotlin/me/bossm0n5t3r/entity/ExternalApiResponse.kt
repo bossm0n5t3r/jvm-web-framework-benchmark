@@ -14,22 +14,27 @@ import java.time.LocalDateTime
  */
 @Entity
 @Table(name = "external_api_responses")
-data class ExternalApiResponse(
+open class ExternalApiResponse(
+    @Column(nullable = false)
+    override var userInfo: String,
+    @Column(nullable = false)
+    override var weatherInfo: String,
+    @Column(nullable = false)
+    override var stockPriceInfo: String,
+    @Column(nullable = false)
+    override var orderStatusInfo: String,
+    @Column(nullable = false)
+    override var metricInfo: String,
+    @Column(name = "created_at")
+    override var createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "updated_at")
+    override var updatedAt: LocalDateTime = LocalDateTime.now(),
+) : ExternalApiResponseTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long = 0,
-    @Column(nullable = false)
-    override val userInfo: String,
-    @Column(nullable = false)
-    override val weatherInfo: String,
-    @Column(nullable = false)
-    override val stockPriceInfo: String,
-    @Column(nullable = false)
-    override val orderStatusInfo: String,
-    @Column(nullable = false)
-    override val metricInfo: String,
-    @Column(name = "created_at")
-    override val createdAt: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "updated_at")
-    override val updatedAt: LocalDateTime = LocalDateTime.now(),
-) : ExternalApiResponseTable
+    var id: Long? = null
+        protected set
+
+    override val notNullId: Long
+        get() = requireNotNull(id)
+}

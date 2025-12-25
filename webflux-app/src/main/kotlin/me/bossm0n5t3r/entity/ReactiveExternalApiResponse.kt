@@ -12,19 +12,21 @@ import java.time.LocalDateTime
 @Table("external_api_responses")
 data class ReactiveExternalApiResponse(
     @Id
-    override val id: Long = 0,
+    val id: Long = 0,
     @Column("user_info")
-    override val userInfo: String,
+    override var userInfo: String,
     @Column("weather_info")
-    override val weatherInfo: String,
+    override var weatherInfo: String,
     @Column("stock_price_info")
-    override val stockPriceInfo: String,
+    override var stockPriceInfo: String,
     @Column("order_status_info")
-    override val orderStatusInfo: String,
+    override var orderStatusInfo: String,
     @Column("metric_info")
-    override val metricInfo: String,
+    override var metricInfo: String,
     @Column("created_at")
-    override val createdAt: LocalDateTime = LocalDateTime.now(),
+    override var createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
-    override val updatedAt: LocalDateTime = LocalDateTime.now(),
-) : ExternalApiResponseTable
+    override var updatedAt: LocalDateTime = LocalDateTime.now(),
+) : ExternalApiResponseTable {
+    override val notNullId: Long = id
+}
