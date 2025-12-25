@@ -3,9 +3,10 @@ plugins {
 }
 rootProject.name = "jvm-web-framework-benchmark"
 
+include("benchmark-app")
 include("common")
+include("external-app")
+include("ktor-app")
 include("mvc-app")
 include("mvc-without-virtual-thread-app")
 include("webflux-app")
-include("benchmark-app")
-include("external-app")
