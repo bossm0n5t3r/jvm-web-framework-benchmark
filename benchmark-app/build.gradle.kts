@@ -1,6 +1,25 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
     alias(libs.plugins.gatling.gradle)
+}
+
+group = "me.bossm0n5t3r"
+version = "1.0-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion =
+            JavaLanguageVersion.of(
+                libs.versions.jdk.version
+                    .get()
+                    .toInt(),
+            )
+    }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -13,6 +32,23 @@ dependencies {
     // gatling
     implementation(libs.gatling.test.framework)
     implementation(libs.gatling.charts.highcharts)
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+ktlint {
+    version.set(
+        libs.versions.pinterest.ktlint
+            .get(),
+    )
 }
 
 // Gatling 리포트를 프로젝트 루트의 'gatling-reports' 디렉터리로 복사하는 태스크를 정의합니다.
