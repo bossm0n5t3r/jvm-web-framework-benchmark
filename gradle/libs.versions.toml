@@ -1,19 +1,19 @@
 [versions]
 kotlin = "2.3.0"
 jdk-version = "25"
-ktlint-gradle = "13.0.0"
-pinterest-ktlint = "1.7.1"
-spring-boot = "3.5.7"
+ktlint-gradle = "14.0.1"
+pinterest-ktlint = "1.6.0"
+spring-boot = "4.0.1"
 spring-dependency-management-version = "1.1.7"
 
 postgresql = "42.7.8"
-r2dbc-postgresql = "1.1.0.RELEASE"
+r2dbc-postgresql = "1.1.1.RELEASE"
 
 netty-resolver-dns-native-macos-version = "4.2.7.Final"
 
-gatling = "3.14.7"
+gatling = "3.14.9"
 
-httpclient5 = "5.5.1"
+httpclient5 = "5.6"
 
 [plugins]
 # Kotlin JVM Gradle plugin
