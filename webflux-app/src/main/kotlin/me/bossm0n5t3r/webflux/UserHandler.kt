@@ -3,6 +3,7 @@ package me.bossm0n5t3r.webflux
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import me.bossm0n5t3r.dto.UserRequest
+import me.bossm0n5t3r.dto.toDto
 import me.bossm0n5t3r.entity.ReactiveUser
 import me.bossm0n5t3r.repository.ReactiveUserRepository
 import org.springframework.http.MediaType
@@ -24,7 +25,7 @@ class UserHandler(
         ServerResponse
             .ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyAndAwait(userRepository.findAllOrderByCreatedAtDesc().asFlow())
+            .bodyAndAwait(userRepository.findAllOrderByCreatedAtDesc().map { it.toDto() }.asFlow())
 
     suspend fun getUserById(request: ServerRequest): ServerResponse {
         val id =
@@ -36,7 +37,7 @@ class UserHandler(
             ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(user)
+                .bodyValue(user.toDto())
                 .awaitSingle()
         } catch (e: Exception) {
             ServerResponse.notFound().build().awaitSingle()
@@ -48,7 +49,7 @@ class UserHandler(
         return ServerResponse
             .ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyAndAwait(userRepository.findByNameContaining(name).asFlow())
+            .bodyAndAwait(userRepository.findByNameContaining(name).map { it.toDto() }.asFlow())
     }
 
     suspend fun getUserByEmail(request: ServerRequest): ServerResponse {
@@ -58,7 +59,7 @@ class UserHandler(
             ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(user)
+                .bodyValue(user.toDto())
                 .awaitSingle()
         } catch (e: Exception) {
             ServerResponse.notFound().build().awaitSingle()
@@ -79,7 +80,7 @@ class UserHandler(
             ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(savedUser)
+                .bodyValue(savedUser.toDto())
                 .awaitSingle()
         } catch (e: Exception) {
             ServerResponse.badRequest().build().awaitSingle()
@@ -103,7 +104,7 @@ class UserHandler(
             ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(savedUser)
+                .bodyValue(savedUser.toDto())
                 .awaitSingle()
         } catch (e: Exception) {
             // Handle both user not found and other errors

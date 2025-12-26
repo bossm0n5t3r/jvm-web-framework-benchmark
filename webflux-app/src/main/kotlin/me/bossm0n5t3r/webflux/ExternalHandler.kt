@@ -4,6 +4,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import me.bossm0n5t3r.dto.ExternalApiResponseDto
+import me.bossm0n5t3r.dto.toDto
 import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
 import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import org.springframework.stereotype.Component
@@ -29,7 +31,7 @@ class ExternalHandler(
         println("Calling health check API")
     }
 
-    suspend fun callExternalApiWithDatabase(): ReactiveExternalApiResponse = callExternalApiWithNoDatabase().saveDatabase()
+    suspend fun callExternalApiWithDatabase(): ExternalApiResponseDto = callExternalApi().saveDatabase().toDto()
 
     /**
      * Call external API using coroutines
@@ -50,7 +52,7 @@ class ExternalHandler(
             .bodyToMono(String::class.java)
             .onErrorResume { Mono.empty() }
 
-    suspend fun callExternalApiWithNoDatabase(): ReactiveExternalApiResponse =
+    private suspend fun callExternalApi(): ReactiveExternalApiResponse =
         coroutineScope {
             val uuid = UUID.randomUUID().toString()
             val userInfo = async { callExternalApi("/api/external/user/$uuid") }
@@ -67,9 +69,11 @@ class ExternalHandler(
             )
         }
 
+    suspend fun callExternalApiWithNoDatabase(): ExternalApiResponseDto = callExternalApi().toDto()
+
     private suspend fun ReactiveExternalApiResponse.saveDatabase() = externalApiResponseRepository.save(this).awaitSingle()
 
-    fun callExternalApiWithNoDatabaseAndNoCoroutines(): Mono<ReactiveExternalApiResponse> {
+    fun callExternalApiWithNoDatabaseAndNoCoroutines(): Mono<ExternalApiResponseDto> {
         val uuid = UUID.randomUUID().toString()
         val userInfoMono = callExternalApiAndReturnMono("/api/external/user/$uuid")
         val weatherInfoMono = callExternalApiAndReturnMono("/api/external/weather?city=${CITIES.random()}")
@@ -90,7 +94,7 @@ class ExternalHandler(
                     stockPriceInfo = tuple.t3,
                     orderStatusInfo = tuple.t4,
                     metricInfo = tuple.t5,
-                )
+                ).toDto()
             }
     }
 }

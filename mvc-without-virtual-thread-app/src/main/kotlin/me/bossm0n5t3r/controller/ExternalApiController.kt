@@ -1,6 +1,7 @@
 package me.bossm0n5t3r.controller
 
-import me.bossm0n5t3r.entity.ExternalApiResponse
+import me.bossm0n5t3r.dto.ExternalApiResponseDto
+import me.bossm0n5t3r.dto.toDto
 import me.bossm0n5t3r.service.ExternalApiService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,8 +29,8 @@ class ExternalApiController(
     }
 
     @PostMapping
-    fun callExternalApi(): ExternalApiResponse = externalApiService.callExternalApi()
+    fun callExternalApi(): ExternalApiResponseDto = externalApiService.callExternalApi().toDto()
 
     @GetMapping("/no-db")
-    fun callExternalApiWithNoDatabase(): ExternalApiResponse = externalApiService.callExternalApiWithNoDatabase()
+    fun callExternalApiWithNoDatabase(): ExternalApiResponseDto = externalApiService.callExternalApiWithNoDatabase().toDto()
 }

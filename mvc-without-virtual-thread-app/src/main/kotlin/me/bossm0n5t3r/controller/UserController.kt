@@ -1,6 +1,8 @@
 package me.bossm0n5t3r.controller
 
+import me.bossm0n5t3r.dto.UserDto
 import me.bossm0n5t3r.dto.UserRequest
+import me.bossm0n5t3r.dto.toDto
 import me.bossm0n5t3r.entity.User
 import me.bossm0n5t3r.repository.UserRepository
 import org.springframework.http.HttpStatus
@@ -25,15 +27,15 @@ class UserController(
     private val userRepository: UserRepository,
 ) {
     @GetMapping
-    fun getAllUsers(): List<User> = userRepository.findAllOrderByCreatedAtDesc()
+    fun getAllUsers(): List<UserDto> = userRepository.findAllOrderByCreatedAtDesc().map { it.toDto() }
 
     @GetMapping("/{id}")
     fun getUserById(
         @PathVariable id: Long,
-    ): ResponseEntity<User> {
+    ): ResponseEntity<UserDto> {
         val user = userRepository.findById(id)
         return if (user.isPresent) {
-            ResponseEntity.ok(user.get())
+            ResponseEntity.ok(user.get().toDto())
         } else {
             ResponseEntity.notFound().build()
         }
@@ -42,15 +44,15 @@ class UserController(
     @GetMapping("/search")
     fun searchUsersByName(
         @RequestParam name: String,
-    ): List<User> = userRepository.findByNameContaining(name)
+    ): List<UserDto> = userRepository.findByNameContaining(name).map { it.toDto() }
 
     @GetMapping("/email/{email}")
     fun getUserByEmail(
         @PathVariable email: String,
-    ): ResponseEntity<User> {
+    ): ResponseEntity<UserDto> {
         val user = userRepository.findByEmail(email)
         return if (user != null) {
-            ResponseEntity.ok(user)
+            ResponseEntity.ok(user.toDto())
         } else {
             ResponseEntity.notFound().build()
         }
@@ -59,7 +61,7 @@ class UserController(
     @PostMapping
     fun createUser(
         @RequestBody userRequest: UserRequest,
-    ): ResponseEntity<User> {
+    ): ResponseEntity<UserDto> {
         val user =
             User(
                 name = userRequest.name,
@@ -68,14 +70,14 @@ class UserController(
                 updatedAt = LocalDateTime.now(),
             )
         val savedUser = userRepository.save(user)
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser)
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser.toDto())
     }
 
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: Long,
         @RequestBody userRequest: UserRequest,
-    ): ResponseEntity<User> {
+    ): ResponseEntity<UserDto> {
         val existingUser = userRepository.findById(id)
         return if (existingUser.isPresent) {
             val updatedUser =
@@ -85,7 +87,7 @@ class UserController(
                     updatedAt = LocalDateTime.now()
                 }
             val savedUser = userRepository.save(updatedUser)
-            ResponseEntity.ok(savedUser)
+            ResponseEntity.ok(savedUser.toDto())
         } else {
             ResponseEntity.notFound().build()
         }
