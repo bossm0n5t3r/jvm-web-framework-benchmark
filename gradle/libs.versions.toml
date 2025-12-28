@@ -17,6 +17,12 @@ httpclient5 = "5.6"
 
 kotlinx-coroutines = "1.10.2"
 
+ktor = "3.3.3"
+hikaricp = "7.0.2"
+logback = "1.5.23"
+exposed = "1.0.0-rc-4"
+fasterxml-jackson = "2.20.1"
+
 [plugins]
 # Kotlin JVM Gradle plugin
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -33,6 +39,8 @@ spring-dependency-management = { id = "io.spring.dependency-management", version
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 
 gatling-gradle = { id = "io.gatling.gradle", version.ref = "gatling" }
+
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 
 [libraries]
 # Kotlin libraries
@@ -61,3 +69,25 @@ gatling-charts-highcharts = { module = "io.gatling.highcharts:gatling-charts-hig
 
 # httpclient5
 apache-httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpclient5" }
+
+# Ktor
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }
+ktor-serialization-jackson = { module = "io.ktor:ktor-serialization-jackson", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core-jvm", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio-jvm", version.ref = "ktor" }
+
+# Serialization
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "fasterxml-jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "fasterxml-jackson" }
+
+# Database connection pool
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+
+# Logging
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
