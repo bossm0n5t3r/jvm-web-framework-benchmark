@@ -29,5 +29,6 @@ open class User(
     var id: Long? = null
         protected set
 
-    override val notNullId: Long = requireNotNull(id)
+    override val notNullId: Long
+        get() = requireNotNull(id) { "Entity must be persisted before accessing notNullId" }
 }
