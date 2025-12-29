@@ -1,0 +1,44 @@
+### Get all users
+GET {{host}}/users
+
+### Get user by id
+GET {{host}}/users/1
+
+### Search users by name
+GET {{host}}/users/search?name=alice
+
+### Get user by email
+GET {{host}}/users/email/alice@example.com
+
+### Create user
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "email": "alice@example.com"
+}
+
+### Update user
+PUT {{host}}/users/1
+Content-Type: application/json
+
+{
+  "name": "Alice Updated",
+  "email": "alice.updated@example.com"
+}
+
+### Delete user by id
+DELETE {{host}}/users/1
+
+### Delete all users
+DELETE {{host}}/users
+
+### External health
+GET {{host}}/external/health
+
+### External call with database
+POST {{host}}/external
+
+### External call without database
+GET {{host}}/external/no-db

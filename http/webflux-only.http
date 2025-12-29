@@ -1,0 +1,2 @@
+### External call without database and without coroutines
+GET http://localhost:8081/webflux/external/no-db/no-coroutines
