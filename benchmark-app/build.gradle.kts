@@ -25,6 +25,7 @@ repositories {
 dependencies {
     // For Gatling Simulations
     implementation(project(":external-app"))
+    implementation(project(":ktor-app"))
     implementation(project(":mvc-app"))
     implementation(project(":mvc-without-virtual-thread-app"))
     implementation(project(":webflux-app"))
@@ -77,6 +78,7 @@ val copyGatlingReports: TaskProvider<Task> =
                 targetName =
                     when {
                         name.startsWith("externalappsimulation-") -> "external-app"
+                        name.startsWith("ktorsimulation-") -> "ktor"
                         name.startsWith("mvcsimulation-") -> "mvc"
                         name.startsWith("mvcwithoutvirtualthreadsimulation-") -> "mvc-without-virtual-thread"
                         name.startsWith("webfluxsimulation-") -> "webflux"
