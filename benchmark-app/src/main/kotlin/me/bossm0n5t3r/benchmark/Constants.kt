@@ -8,4 +8,6 @@ object Constants {
     const val KTOR_URL = "http://localhost:8084"
 
     const val APPLICATION_JSON = "application/json"
+
+    const val SIMULATION_RESPONSE_TIME_IN_MILLIS = 10_000
 }
