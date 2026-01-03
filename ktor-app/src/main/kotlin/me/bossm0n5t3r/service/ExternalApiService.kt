@@ -7,6 +7,8 @@ import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import me.bossm0n5t3r.dto.ExternalApiResponseDto
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
@@ -38,20 +40,22 @@ class ExternalApiService(
 
     suspend fun callExternalApiWithNoDatabase() =
         withContext(Dispatchers.IO) {
-            val uuid = UUID.randomUUID().toString()
-            val userInfo = callExternalApi("/api/external/user/$uuid")
-            val weatherInfo = callExternalApi("/api/external/weather?city=${CITIES.random()}")
-            val stockInfo = callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
-            val orderInfo = callExternalApi("/api/external/order/$uuid")
-            val metricInfo = callExternalApi("/api/external/metrics")
+            coroutineScope {
+                val uuid = UUID.randomUUID().toString()
+                val userInfo = async { callExternalApi("/api/external/user/$uuid") }
+                val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
+                val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+                val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
+                val metricInfo = async { callExternalApi("/api/external/metrics") }
 
-            ExternalApiResponseDto(
-                userInfo = userInfo,
-                weatherInfo = weatherInfo,
-                stockPriceInfo = stockInfo,
-                orderStatusInfo = orderInfo,
-                metricInfo = metricInfo,
-            )
+                ExternalApiResponseDto(
+                    userInfo = userInfo.await(),
+                    weatherInfo = weatherInfo.await(),
+                    stockPriceInfo = stockInfo.await(),
+                    orderStatusInfo = orderInfo.await(),
+                    metricInfo = metricInfo.await(),
+                )
+            }
         }
 
     private suspend fun callExternalApi(endpoint: String): String =
