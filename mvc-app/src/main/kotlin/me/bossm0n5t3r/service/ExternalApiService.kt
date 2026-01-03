@@ -5,6 +5,7 @@ import me.bossm0n5t3r.repository.ExternalApiResponseRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.toEntity
 import java.util.UUID
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
@@ -44,7 +45,7 @@ class ExternalApiService(
                 .get()
                 .uri("$EXTERNAL_API_BASE_URL$endpoint")
                 .retrieve()
-                .toEntity(String::class.java)
+                .toEntity<String>()
                 .body
         } catch (e: RestClientException) {
             println("Failed to call external API at $endpoint: ${e.message}")
