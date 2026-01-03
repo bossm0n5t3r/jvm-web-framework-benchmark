@@ -2,11 +2,13 @@ package me.bossm0n5t3r.benchmark
 
 import io.gatling.javaapi.core.CoreDsl.global
 import io.gatling.javaapi.core.CoreDsl.rampUsers
+import io.gatling.javaapi.core.CoreDsl.responseTimeInMillis
 import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
-import io.gatling.javaapi.http.HttpDsl
 import io.gatling.javaapi.http.HttpDsl.http
+import io.gatling.javaapi.http.HttpDsl.status
 import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
+import me.bossm0n5t3r.benchmark.Constants.SIMULATION_RESPONSE_TIME_IN_MILLIS
 import me.bossm0n5t3r.benchmark.Constants.WEBFLUX_URL
 import java.time.Duration
 
@@ -15,7 +17,7 @@ class WebFluxSimulation : Simulation() {
     private val users = 10_000
 
     private val httpProtocol =
-        HttpDsl.http
+        http
             .baseUrl(url)
             .acceptHeader(APPLICATION_JSON)
             .contentTypeHeader(APPLICATION_JSON)
@@ -25,7 +27,8 @@ class WebFluxSimulation : Simulation() {
             .exec(
                 http("[WebFlux] External API with no database")
                     .get("/webflux/external/no-db")
-                    .check(HttpDsl.status().`is`(200)),
+                    .check(status().`is`(200))
+                    .check(responseTimeInMillis().lte(SIMULATION_RESPONSE_TIME_IN_MILLIS)),
             )
 
     init {
