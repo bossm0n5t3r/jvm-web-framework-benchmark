@@ -43,7 +43,7 @@ class ExternalApiService(
             coroutineScope {
                 val uuid = UUID.randomUUID().toString()
                 val userInfo = async { callExternalApi("/api/external/user/$uuid") }
-                val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
+                val weatherInfo = async { callExternalApi("/api/external/weather", mapOf("city" to CITIES.random())) }
                 val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
                 val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
                 val metricInfo = async { callExternalApi("/api/external/metrics") }
@@ -58,9 +58,19 @@ class ExternalApiService(
             }
         }
 
-    private suspend fun callExternalApi(endpoint: String): String =
+    private suspend fun callExternalApi(
+        endpoint: String,
+        params: Map<String, String> = emptyMap(),
+    ): String =
         httpClient
             .get("$EXTERNAL_API_BASE_URL$endpoint") {
+                if (params.isNotEmpty()) {
+                    url {
+                        params.forEach { (key, value) ->
+                            parameters.append(key, value)
+                        }
+                    }
+                }
                 timeout {
                     connectTimeoutMillis = Constants.CONNECT_TIMEOUT_MILLIS
                     requestTimeoutMillis = Constants.RESPONSE_TIMEOUT_MILLIS
