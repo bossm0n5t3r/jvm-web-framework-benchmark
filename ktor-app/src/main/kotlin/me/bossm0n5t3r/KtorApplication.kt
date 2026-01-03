@@ -1,6 +1,7 @@
 package me.bossm0n5t3r
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStarted
@@ -8,7 +9,8 @@ import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.routing.get
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import me.bossm0n5t3r.config.DatabaseFactory
 import me.bossm0n5t3r.controller.externalApiRouting
 import me.bossm0n5t3r.controller.userRouting
@@ -36,6 +38,14 @@ fun Application.module() {
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
+        }
+    }
+
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            call.application.environment.log
+                .error("Unhandled error", cause)
+            call.respond(HttpStatusCode.InternalServerError)
         }
     }
 
