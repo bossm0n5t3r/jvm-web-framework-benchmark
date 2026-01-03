@@ -10,6 +10,7 @@ import me.bossm0n5t3r.entity.ReactiveExternalApiResponse
 import me.bossm0n5t3r.repository.ReactiveExternalApiResponseRepository
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 import java.util.UUID
 
@@ -49,7 +50,7 @@ class ExternalHandler(
             .get()
             .uri("${EXTERNAL_API_BASE_URL}$endpoint")
             .retrieve()
-            .bodyToMono(String::class.java)
+            .bodyToMono<String>()
             .onErrorResume { Mono.empty() }
 
     private suspend fun callExternalApi(): ReactiveExternalApiResponse =
@@ -88,13 +89,13 @@ class ExternalHandler(
                 orderInfoMono,
                 metricInfoMono,
             ).map { tuple ->
-                ReactiveExternalApiResponse(
+                ExternalApiResponseDto(
                     userInfo = tuple.t1,
                     weatherInfo = tuple.t2,
                     stockPriceInfo = tuple.t3,
                     orderStatusInfo = tuple.t4,
                     metricInfo = tuple.t5,
-                ).toDto()
+                )
             }
     }
 }
