@@ -2,6 +2,7 @@ package me.bossm0n5t3r.service
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.endpoint
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
@@ -26,6 +27,15 @@ class ExternalApiService(
 
     private val httpClient =
         HttpClient(CIO) {
+            engine {
+                maxConnectionsCount = 1000
+                endpoint {
+                    maxConnectionsPerRoute = 1000
+                    pipelineMaxSize = 20
+                    connectTimeout = Constants.CONNECT_TIMEOUT_MILLIS
+                    requestTimeout = Constants.RESPONSE_TIMEOUT_MILLIS
+                }
+            }
             install(HttpTimeout) {
                 connectTimeoutMillis = Constants.CONNECT_TIMEOUT_MILLIS
                 requestTimeoutMillis = Constants.RESPONSE_TIMEOUT_MILLIS
