@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.ktfmt)
 }
 
 group = "me.bossm0n5t3r"
@@ -48,9 +48,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-ktlint {
-    version.set(
-        libs.versions.pinterest.ktlint
-            .get(),
-    )
+ktfmt {
+    kotlinLangStyle()
 }

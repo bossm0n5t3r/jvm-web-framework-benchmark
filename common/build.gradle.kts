@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.ktfmt)
 }
 
 group = "me.bossm0n5t3r"
@@ -31,9 +31,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-ktlint {
-    version.set(
-        libs.versions.pinterest.ktlint
-            .get(),
-    )
+ktfmt {
+    kotlinLangStyle()
 }

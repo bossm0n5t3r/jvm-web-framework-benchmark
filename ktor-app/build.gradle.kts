@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.ktfmt)
     application
 }
 
@@ -61,9 +61,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-ktlint {
-    version.set(
-        libs.versions.pinterest.ktlint
-            .get(),
-    )
+ktfmt {
+    kotlinLangStyle()
 }

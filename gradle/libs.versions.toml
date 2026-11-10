@@ -1,27 +1,26 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.4.21"
 jdk-version = "25"
-ktlint-gradle = "14.0.1"
-pinterest-ktlint = "1.6.0"
-spring-boot = "4.0.1"
+ktfmt-gradle = "0.28.0"
+spring-boot = "4.1.2"
 spring-dependency-management-version = "1.1.7"
 
-postgresql = "42.7.8"
-r2dbc-postgresql = "1.1.1.RELEASE"
+postgresql = "42.7.14"
+r2dbc-postgresql = "1.1.3.RELEASE"
 
-netty-resolver-dns-native-macos-version = "4.2.7.Final"
+netty-resolver-dns-native-macos-version = "4.2.20.Final"
 
-gatling = "3.14.9"
+gatling = "3.16.0"
 
-httpclient5 = "5.6"
+httpclient5 = "5.6.5"
 
-kotlinx-coroutines = "1.10.2"
+kotlinx-coroutines = "1.11.0"
 
-ktor = "3.3.3"
-hikaricp = "7.0.2"
-logback = "1.5.23"
-exposed = "1.0.0-rc-4"
-fasterxml-jackson = "2.20.1"
+ktor = "3.6.1"
+hikaricp = "7.1.0"
+logback = "1.6.6"
+exposed = "1.6.1"
+fasterxml-jackson = "2.23.0"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -35,8 +34,8 @@ kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.re
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 # Spring dependency management plugin
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management-version" }
-# ktlint Gradle plugin
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+# ktfmt Gradle plugin
+ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt-gradle" }
 
 gatling-gradle = { id = "io.gatling.gradle", version.ref = "gatling" }
 
