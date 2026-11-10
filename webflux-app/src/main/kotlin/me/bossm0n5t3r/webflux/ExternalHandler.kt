@@ -1,5 +1,7 @@
 package me.bossm0n5t3r.webflux
 
+import java.time.Duration
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
-import java.time.Duration
-import java.util.UUID
 
 @Component
 class ExternalHandler(
@@ -28,19 +28,17 @@ class ExternalHandler(
         private val STOCK_SYMBOLS = listOf("AAPL", "GOOGL", "TSLA", "MSFT")
     }
 
-    /**
-     * Call external health API using coroutines
-     */
+    /** Call external health API using coroutines */
     suspend fun callExternalHealthApi() {
         println("Calling health check API")
     }
 
-    suspend fun callExternalApiWithDatabase(): ExternalApiResponseDto = callExternalApi().saveDatabase().toDto()
+    suspend fun callExternalApiWithDatabase(): ExternalApiResponseDto =
+        callExternalApi().saveDatabase().toDto()
 
-    /**
-     * Call external API using coroutines
-     */
-    private suspend fun callExternalApi(endpoint: String): String = callExternalApiAndReturnMono(endpoint).awaitSingle()
+    /** Call external API using coroutines */
+    private suspend fun callExternalApi(endpoint: String): String =
+        callExternalApiAndReturnMono(endpoint).awaitSingle()
 
     private fun callExternalApiAndReturnMono(endpoint: String): Mono<String> =
         webClient
@@ -49,17 +47,15 @@ class ExternalHandler(
             .retrieve()
             .onStatus({ it.isError }) { resp ->
                 // 에러 바디를 읽어서 예외 메시지에 포함(너무 길면 잘라내는 것도 추천)
-                resp
-                    .bodyToMono<String>()
-                    .defaultIfEmpty("")
-                    .flatMap { body ->
-                        Mono.error(
-                            Exception(
-                                "External API call failed: status=${resp.statusCode().value()}, endpoint=$endpoint, body=$body",
-                            ),
-                        )
-                    }
-            }.bodyToMono<String>()
+                resp.bodyToMono<String>().defaultIfEmpty("").flatMap { body ->
+                    Mono.error(
+                        Exception(
+                            "External API call failed: status=${resp.statusCode().value()}, endpoint=$endpoint, body=$body",
+                        ),
+                    )
+                }
+            }
+            .bodyToMono<String>()
             .timeout(Duration.ofMillis(CONNECT_TIMEOUT_MILLIS))
 
     private suspend fun callExternalApi(): ReactiveExternalApiResponse =
@@ -67,8 +63,12 @@ class ExternalHandler(
             coroutineScope {
                 val uuid = UUID.randomUUID().toString()
                 val userInfo = async { callExternalApi("/api/external/user/$uuid") }
-                val weatherInfo = async { callExternalApi("/api/external/weather?city=${CITIES.random()}") }
-                val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+                val weatherInfo = async {
+                    callExternalApi("/api/external/weather?city=${CITIES.random()}")
+                }
+                val stockInfo = async {
+                    callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
+                }
                 val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
                 val metricInfo = async { callExternalApi("/api/external/metrics") }
                 ReactiveExternalApiResponse(
@@ -83,23 +83,26 @@ class ExternalHandler(
 
     suspend fun callExternalApiWithNoDatabase(): ExternalApiResponseDto = callExternalApi().toDto()
 
-    private suspend fun ReactiveExternalApiResponse.saveDatabase() = externalApiResponseRepository.save(this).awaitSingle()
+    private suspend fun ReactiveExternalApiResponse.saveDatabase() =
+        externalApiResponseRepository.save(this).awaitSingle()
 
     fun callExternalApiWithNoDatabaseAndNoCoroutines(): Mono<ExternalApiResponseDto> {
         val uuid = UUID.randomUUID().toString()
         val userInfoMono = callExternalApiAndReturnMono("/api/external/user/$uuid")
-        val weatherInfoMono = callExternalApiAndReturnMono("/api/external/weather?city=${CITIES.random()}")
-        val stockInfoMono = callExternalApiAndReturnMono("/api/external/stock/${STOCK_SYMBOLS.random()}")
+        val weatherInfoMono =
+            callExternalApiAndReturnMono("/api/external/weather?city=${CITIES.random()}")
+        val stockInfoMono =
+            callExternalApiAndReturnMono("/api/external/stock/${STOCK_SYMBOLS.random()}")
         val orderInfoMono = callExternalApiAndReturnMono("/api/external/order/$uuid")
         val metricInfoMono = callExternalApiAndReturnMono("/api/external/metrics")
-        return Mono
-            .zip(
+        return Mono.zip(
                 userInfoMono,
                 weatherInfoMono,
                 stockInfoMono,
                 orderInfoMono,
                 metricInfoMono,
-            ).map { tuple ->
+            )
+            .map { tuple ->
                 ExternalApiResponseDto(
                     userInfo = tuple.t1,
                     weatherInfo = tuple.t2,

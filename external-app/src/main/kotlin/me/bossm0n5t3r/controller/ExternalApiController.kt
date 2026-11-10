@@ -1,5 +1,11 @@
 package me.bossm0n5t3r.controller
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
+import kotlin.random.Random
 import kotlinx.coroutines.delay
 import me.bossm0n5t3r.dto.Metric
 import me.bossm0n5t3r.dto.OrderStatus
@@ -11,16 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import kotlin.concurrent.atomics.AtomicLong
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
-import kotlin.random.Random
 
 /**
- * External API Controller that simulates external service calls
- * Each endpoint returns different responses to simulate real external APIs
+ * External API Controller that simulates external service calls Each endpoint returns different
+ * responses to simulate real external APIs
  */
 @OptIn(ExperimentalAtomicApi::class)
 @RestController
@@ -30,9 +30,7 @@ class ExternalApiController {
     private val random = Random.Default
     private val timeUnit = 1000L
 
-    /**
-     * Health check endpoint with timestamp
-     */
+    /** Health check endpoint with timestamp */
     @GetMapping("/health")
     suspend fun health(): Map<String, Any> =
         mapOf(
@@ -42,9 +40,7 @@ class ExternalApiController {
             "uptime" to "${random.nextInt(1, 1000)} seconds",
         )
 
-    /**
-     * Get random user data
-     */
+    /** Get random user data */
     @GetMapping("/user/{id}")
     suspend fun getUser(
         @PathVariable id: String,
@@ -65,9 +61,7 @@ class ExternalApiController {
         )
     }
 
-    /**
-     * Get weather data with random values
-     */
+    /** Get weather data with random values */
     @GetMapping("/weather")
     suspend fun getWeather(
         @RequestParam(defaultValue = "Seoul") city: String,
@@ -87,9 +81,7 @@ class ExternalApiController {
         )
     }
 
-    /**
-     * Get stock price with fluctuating values
-     */
+    /** Get stock price with fluctuating values */
     @GetMapping("/stock/{symbol}")
     suspend fun getStockPrice(
         @PathVariable symbol: String,
@@ -119,9 +111,7 @@ class ExternalApiController {
         )
     }
 
-    /**
-     * Get order status with random processing states
-     */
+    /** Get order status with random processing states */
     @GetMapping("/order/{orderId}")
     suspend fun getOrderStatus(
         @PathVariable orderId: String,
@@ -137,15 +127,16 @@ class ExternalApiController {
             product = products.random(),
             quantity = random.nextInt(1, 5),
             totalAmount = random.nextInt(100, 2000),
-            estimatedDelivery = LocalDateTime.now().plusDays(random.nextLong(1, 7)).format(DateTimeFormatter.ISO_LOCAL_DATE),
+            estimatedDelivery =
+                LocalDateTime.now()
+                    .plusDays(random.nextLong(1, 7))
+                    .format(DateTimeFormatter.ISO_LOCAL_DATE),
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             requestId = requestCounter.incrementAndFetch(),
         )
     }
 
-    /**
-     * Get random metrics/analytics data
-     */
+    /** Get random metrics/analytics data */
     @GetMapping("/metrics")
     suspend fun getMetrics(): Metric {
         delay(5 * timeUnit)

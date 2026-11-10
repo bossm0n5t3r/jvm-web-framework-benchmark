@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.controller
 
+import java.time.LocalDateTime
 import me.bossm0n5t3r.dto.UserDto
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.dto.toDto
@@ -16,18 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
 
-/**
- * Spring MVC Controller for traditional blocking operations
- */
+/** Spring MVC Controller for traditional blocking operations */
 @RestController
 @RequestMapping("/mvc/users")
 class UserController(
     private val userRepository: UserRepository,
 ) {
     @GetMapping
-    fun getAllUsers(): List<UserDto> = userRepository.findAllOrderByCreatedAtDesc().map { it.toDto() }
+    fun getAllUsers(): List<UserDto> =
+        userRepository.findAllOrderByCreatedAtDesc().map { it.toDto() }
 
     @GetMapping("/{id}")
     fun getUserById(

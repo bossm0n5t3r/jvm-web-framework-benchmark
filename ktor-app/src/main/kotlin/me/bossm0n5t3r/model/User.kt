@@ -16,8 +16,7 @@ object Users : LongIdTable("users") {
 
 class UserEntity(
     id: EntityID<Long>,
-) : LongEntity(id),
-    UserTable {
+) : LongEntity(id), UserTable {
     companion object : LongEntityClass<UserEntity>(Users)
 
     override var name by Users.name

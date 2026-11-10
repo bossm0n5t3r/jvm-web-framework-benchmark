@@ -1,14 +1,12 @@
 package me.bossm0n5t3r.service
 
+import java.util.UUID
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import me.bossm0n5t3r.entity.ExternalApiResponse
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
 import org.springframework.stereotype.Service
-import java.util.UUID
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
-/**
- * Service for calling external APIs and storing responses in a database
- */
+/** Service for calling external APIs and storing responses in a database */
 @OptIn(ExperimentalAtomicApi::class)
 @Service
 class ExternalApiService(
@@ -21,9 +19,7 @@ class ExternalApiService(
         private val STOCK_SYMBOLS = listOf("AAPL", "GOOGL", "TSLA", "MSFT")
     }
 
-    /**
-     * Call health check API
-     */
+    /** Call health check API */
     fun callHealthApi() {
         println("Calling health check API")
     }
@@ -35,11 +31,22 @@ class ExternalApiService(
 
     fun callExternalApiWithNoDatabase(): ExternalApiResponse {
         val uuid = UUID.randomUUID().toString()
-        val userInfo = externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/user/$uuid")
-        val weatherInfo = externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/weather?city=${CITIES.random()}")
-        val stockInfo = externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/stock/${STOCK_SYMBOLS.random()}")
-        val orderInfo = externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/order/$uuid")
-        val metricInfo = externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/metrics")
+        val userInfo =
+            externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/user/$uuid")
+        val weatherInfo =
+            externalApiAsyncClient.callExternalApi(
+                "$EXTERNAL_API_BASE_URL/api/external/weather?city=${CITIES.random()}",
+            )
+        val stockInfo =
+            externalApiAsyncClient.callExternalApi(
+                "$EXTERNAL_API_BASE_URL/api/external/stock/${STOCK_SYMBOLS.random()}",
+            )
+        val orderInfo =
+            externalApiAsyncClient.callExternalApi(
+                "$EXTERNAL_API_BASE_URL/api/external/order/$uuid",
+            )
+        val metricInfo =
+            externalApiAsyncClient.callExternalApi("$EXTERNAL_API_BASE_URL/api/external/metrics")
 
         return ExternalApiResponse(
             userInfo = userInfo.join() ?: error("Not found userInfo"),

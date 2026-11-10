@@ -9,15 +9,14 @@ plugins {
 }
 
 group = "me.bossm0n5t3r"
+
 version = "1.0-SNAPSHOT"
 
 java {
     toolchain {
         languageVersion =
             JavaLanguageVersion.of(
-                libs.versions.jdk.version
-                    .get()
-                    .toInt(),
+                libs.versions.jdk.version.get().toInt(),
             )
     }
 }
@@ -28,9 +27,7 @@ allOpen {
     annotation("jakarta.persistence.MappedSuperclass")
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     api(project(":common"))
@@ -49,16 +46,8 @@ dependencies {
     testImplementation(libs.spring.boot.starter.test)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
 
-ktfmt {
-    kotlinLangStyle()
-}
+ktfmt { kotlinLangStyle() }

@@ -16,12 +16,8 @@ fun Application.externalApiRouting(externalApiService: ExternalApiService) {
                 externalApiService.callHealthApi()
                 call.respond(HttpStatusCode.OK)
             }
-            post {
-                call.respond(externalApiService.callExternalApiWithDatabase())
-            }
-            get("/no-db") {
-                call.respond(externalApiService.callExternalApiWithNoDatabase())
-            }
+            post { call.respond(externalApiService.callExternalApiWithDatabase()) }
+            get("/no-db") { call.respond(externalApiService.callExternalApiWithNoDatabase()) }
         }
     }
 }

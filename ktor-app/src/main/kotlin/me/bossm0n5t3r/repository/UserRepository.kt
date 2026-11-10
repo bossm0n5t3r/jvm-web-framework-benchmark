@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.repository
 
+import java.time.LocalDateTime
 import me.bossm0n5t3r.dto.UserRequest
 import me.bossm0n5t3r.model.UserEntity
 import me.bossm0n5t3r.model.Users
@@ -8,7 +9,6 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
-import java.time.LocalDateTime
 
 class UserRepository(
     private val database: Database,
@@ -19,19 +19,13 @@ class UserRepository(
         }
 
     suspend fun findById(id: Long): UserEntity? =
-        suspendTransaction(database) {
-            UserEntity.findById(id)
-        }
+        suspendTransaction(database) { UserEntity.findById(id) }
 
     suspend fun findByEmail(email: String): UserEntity? =
-        suspendTransaction(database) {
-            UserEntity.find { Users.email eq email }.firstOrNull()
-        }
+        suspendTransaction(database) { UserEntity.find { Users.email eq email }.firstOrNull() }
 
     suspend fun findByNameContaining(name: String): List<UserEntity> =
-        suspendTransaction(database) {
-            UserEntity.find { Users.name like "%$name%" }.toList()
-        }
+        suspendTransaction(database) { UserEntity.find { Users.name like "%$name%" }.toList() }
 
     suspend fun create(userRequest: UserRequest): UserEntity =
         suspendTransaction(database) {
@@ -56,12 +50,8 @@ class UserRepository(
         }
 
     suspend fun deleteById(id: Long): Boolean =
-        suspendTransaction(database) {
-            UserEntity.findById(id)?.delete() != null
-        }
+        suspendTransaction(database) { UserEntity.findById(id)?.delete() != null }
 
     suspend fun deleteAll() =
-        suspendTransaction(database) {
-            UserEntity.all().forEach { it.delete() }
-        }
+        suspendTransaction(database) { UserEntity.all().forEach { it.delete() } }
 }

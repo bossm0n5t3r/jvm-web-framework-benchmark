@@ -5,22 +5,19 @@ plugins {
 }
 
 group = "me.bossm0n5t3r"
+
 version = "1.0-SNAPSHOT"
 
 java {
     toolchain {
         languageVersion =
             JavaLanguageVersion.of(
-                libs.versions.jdk.version
-                    .get()
-                    .toInt(),
+                libs.versions.jdk.version.get().toInt(),
             )
     }
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     // For Gatling Simulations
@@ -35,33 +32,18 @@ dependencies {
     implementation(libs.gatling.charts.highcharts)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
 
-ktfmt {
-    kotlinLangStyle()
-}
+ktfmt { kotlinLangStyle() }
 
 // Gatling 리포트를 프로젝트 루트의 'gatling-reports' 디렉터리로 복사하는 태스크를 정의합니다.
 val copyGatlingReports: TaskProvider<Task> =
     tasks.register("copyGatlingReports") {
         doLast {
-            val sourceDir =
-                layout.buildDirectory
-                    .dir("reports/gatling")
-                    .get()
-                    .asFile
-            val targetRootDir =
-                rootProject.layout.projectDirectory
-                    .dir("reports/gatling")
-                    .asFile
+            val sourceDir = layout.buildDirectory.dir("reports/gatling").get().asFile
+            val targetRootDir = rootProject.layout.projectDirectory.dir("reports/gatling").asFile
 
             // 소스 디렉터리가 없으면 작업을 중단합니다.
             if (!sourceDir.exists()) {
@@ -77,9 +59,11 @@ val copyGatlingReports: TaskProvider<Task> =
                         name.startsWith("externalappsimulation-") -> "external-app"
                         name.startsWith("ktorsimulation-") -> "ktor"
                         name.startsWith("mvcsimulation-") -> "mvc"
-                        name.startsWith("mvcwithoutvirtualthreadsimulation-") -> "mvc-without-virtual-thread"
+                        name.startsWith("mvcwithoutvirtualthreadsimulation-") ->
+                            "mvc-without-virtual-thread"
                         name.startsWith("webfluxsimulation-") -> "webflux"
-                        name.startsWith("webfluxwithoutcoroutinessimulation-") -> "webflux-without-coroutines"
+                        name.startsWith("webfluxwithoutcoroutinessimulation-") ->
+                            "webflux-without-coroutines"
                         else -> null
                     }
 
@@ -103,6 +87,4 @@ val copyGatlingReports: TaskProvider<Task> =
     }
 
 // 'gatlingRun' 태스크가 완료된 후 'copyGatlingReports' 태스크를 실행하도록 설정합니다.
-tasks.named("gatlingRun") {
-    finalizedBy(copyGatlingReports)
-}
+tasks.named("gatlingRun") { finalizedBy(copyGatlingReports) }

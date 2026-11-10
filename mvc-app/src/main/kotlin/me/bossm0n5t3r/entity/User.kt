@@ -6,23 +6,17 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import me.bossm0n5t3r.table.UserTable
 import java.time.LocalDateTime
+import me.bossm0n5t3r.table.UserTable
 
-/**
- * JPA Entity for Spring MVC
- */
+/** JPA Entity for Spring MVC */
 @Entity
 @Table(name = "users")
 open class User(
-    @Column(nullable = false)
-    override var name: String,
-    @Column(nullable = false)
-    override var email: String,
-    @Column(name = "created_at")
-    override var createdAt: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "updated_at")
-    override var updatedAt: LocalDateTime = LocalDateTime.now(),
+    @Column(nullable = false) override var name: String,
+    @Column(nullable = false) override var email: String,
+    @Column(name = "created_at") override var createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "updated_at") override var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) : UserTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

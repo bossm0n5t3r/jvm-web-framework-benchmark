@@ -8,22 +8,19 @@ plugins {
 }
 
 group = "me.bossm0n5t3r"
+
 version = "1.0-SNAPSHOT"
 
 java {
     toolchain {
         languageVersion =
             JavaLanguageVersion.of(
-                libs.versions.jdk.version
-                    .get()
-                    .toInt(),
+                libs.versions.jdk.version.get().toInt(),
             )
     }
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     api(project(":common"))
@@ -45,19 +42,13 @@ dependencies {
     testImplementation(libs.spring.boot.starter.test)
 
     // Netty resolver for macOS
-    implementation("io.netty:netty-resolver-dns-native-macos:${libs.versions.netty.resolver.dns.native.macos.version.get()}:osx-aarch_64")
+    implementation(
+        "io.netty:netty-resolver-dns-native-macos:${libs.versions.netty.resolver.dns.native.macos.version.get()}:osx-aarch_64",
+    )
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
 
-ktfmt {
-    kotlinLangStyle()
-}
+ktfmt { kotlinLangStyle() }

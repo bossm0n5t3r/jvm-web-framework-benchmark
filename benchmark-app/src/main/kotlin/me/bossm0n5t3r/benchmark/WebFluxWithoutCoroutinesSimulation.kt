@@ -6,19 +6,16 @@ import io.gatling.javaapi.core.CoreDsl.scenario
 import io.gatling.javaapi.core.Simulation
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
+import java.time.Duration
 import me.bossm0n5t3r.benchmark.Constants.APPLICATION_JSON
 import me.bossm0n5t3r.benchmark.Constants.WEBFLUX_URL
-import java.time.Duration
 
 class WebFluxWithoutCoroutinesSimulation : Simulation() {
     private val url = WEBFLUX_URL
     private val users = 10_000
 
     private val httpProtocol =
-        http
-            .baseUrl(url)
-            .acceptHeader(APPLICATION_JSON)
-            .contentTypeHeader(APPLICATION_JSON)
+        http.baseUrl(url).acceptHeader(APPLICATION_JSON).contentTypeHeader(APPLICATION_JSON)
 
     private val scenario =
         scenario("WebFlux Load Test")
@@ -32,10 +29,9 @@ class WebFluxWithoutCoroutinesSimulation : Simulation() {
         val rampUsers = rampUsers(users).during(Duration.ofSeconds(10))
 
         setUp(
-            scenario
-                .injectOpen(rampUsers)
-                .protocols(httpProtocol),
-        ).maxDuration(Duration.ofMinutes(3))
+                scenario.injectOpen(rampUsers).protocols(httpProtocol),
+            )
+            .maxDuration(Duration.ofMinutes(3))
             .assertions(
                 global().successfulRequests().percent().gt(60.0),
             )

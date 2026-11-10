@@ -35,16 +35,11 @@ fun Application.module() {
     val externalRepository = ExternalApiResponseRepository(database)
     val externalApiService = ExternalApiService(externalRepository)
 
-    install(ContentNegotiation) {
-        jackson {
-            registerModule(JavaTimeModule())
-        }
-    }
+    install(ContentNegotiation) { jackson { registerModule(JavaTimeModule()) } }
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            call.application.environment.log
-                .error("Unhandled error", cause)
+            call.application.environment.log.error("Unhandled error", cause)
             call.respond(HttpStatusCode.InternalServerError)
         }
     }

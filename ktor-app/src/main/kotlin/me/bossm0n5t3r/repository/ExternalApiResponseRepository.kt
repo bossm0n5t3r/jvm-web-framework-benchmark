@@ -1,10 +1,10 @@
 package me.bossm0n5t3r.repository
 
+import java.time.LocalDateTime
 import me.bossm0n5t3r.dto.ExternalApiResponseDto
 import me.bossm0n5t3r.model.ExternalApiResponseEntity
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
-import java.time.LocalDateTime
 
 class ExternalApiResponseRepository(
     private val database: Database,

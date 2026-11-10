@@ -21,12 +21,7 @@ class DatabaseFactory(
                 username = dbConfig.property("username").getString()
                 password = dbConfig.property("password").getString()
                 driverClassName = dbConfig.property("driver").getString()
-                maximumPoolSize =
-                    dbConfig
-                        .propertyOrNull("maxPoolSize")
-                        ?.getString()
-                        ?.toInt()
-                        ?: 10
+                maximumPoolSize = dbConfig.propertyOrNull("maxPoolSize")?.getString()?.toInt() ?: 10
             }
         return HikariDataSource(hikariConfig)
     }

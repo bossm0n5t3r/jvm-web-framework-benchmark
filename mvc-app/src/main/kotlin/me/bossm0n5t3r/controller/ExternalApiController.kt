@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * Controller responsible for handling external API interactions and storing the responses.
  *
- * This controller provides endpoints for calling external APIs using virtual threads
- * and managing the persisted responses in the database.
- * It facilitates integration with external systems and provides methods for retrieving the results.
+ * This controller provides endpoints for calling external APIs using virtual threads and managing
+ * the persisted responses in the database. It facilitates integration with external systems and
+ * provides methods for retrieving the results.
  */
 @RestController
 @RequestMapping("/mvc/external")
 class ExternalApiController(
     private val externalApiService: ExternalApiService,
 ) {
-    /**
-     * Call external health API using Virtual Threads
-     */
+    /** Call external health API using Virtual Threads */
     @GetMapping("/health")
     fun callExternalHealthApi() {
         externalApiService.callHealthApi()
@@ -32,5 +30,6 @@ class ExternalApiController(
     fun callExternalApi(): ExternalApiResponseDto = externalApiService.callExternalApi().toDto()
 
     @GetMapping("/no-db")
-    fun callExternalApiWithNoDatabase(): ExternalApiResponseDto = externalApiService.callExternalApiWithNoDatabase().toDto()
+    fun callExternalApiWithNoDatabase(): ExternalApiResponseDto =
+        externalApiService.callExternalApiWithNoDatabase().toDto()
 }

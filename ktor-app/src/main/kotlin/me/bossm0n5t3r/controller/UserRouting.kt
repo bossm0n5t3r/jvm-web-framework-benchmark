@@ -10,17 +10,15 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
-import me.bossm0n5t3r.dto.UserRequest
-import me.bossm0n5t3r.repository.UserRepository
 import kotlin.text.isNullOrBlank
 import kotlin.text.toLongOrNull
+import me.bossm0n5t3r.dto.UserRequest
+import me.bossm0n5t3r.repository.UserRepository
 
 fun Application.userRouting(userRepository: UserRepository) {
     routing {
         route("/ktor/users") {
-            get {
-                call.respond(userRepository.findAllOrderByCreatedAtDesc())
-            }
+            get { call.respond(userRepository.findAllOrderByCreatedAtDesc()) }
             get("/search") {
                 val name = call.request.queryParameters["name"]
                 if (name.isNullOrBlank()) {

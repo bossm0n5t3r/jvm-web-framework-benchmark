@@ -19,8 +19,7 @@ object ExternalApiResponses : LongIdTable("external_api_responses") {
 
 class ExternalApiResponseEntity(
     id: EntityID<Long>,
-) : LongEntity(id),
-    ExternalApiResponseTable {
+) : LongEntity(id), ExternalApiResponseTable {
     companion object : LongEntityClass<ExternalApiResponseEntity>(ExternalApiResponses)
 
     override var userInfo by ExternalApiResponses.userInfo

@@ -5,16 +5,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-/**
- * Spring WebFlux Router Configuration
- */
+/** Spring WebFlux Router Configuration */
 @RestController
 @RequestMapping("/webflux/external")
 class ExternalRouter(
     private val externalHandler: ExternalHandler,
 ) {
-    @GetMapping("/health")
-    suspend fun health() = externalHandler.callExternalHealthApi()
+    @GetMapping("/health") suspend fun health() = externalHandler.callExternalHealthApi()
 
     @PostMapping
     suspend fun callExternalApiWithDatabase() = externalHandler.callExternalApiWithDatabase()
@@ -23,5 +20,6 @@ class ExternalRouter(
     suspend fun callExternalApiWithNoDatabase() = externalHandler.callExternalApiWithNoDatabase()
 
     @GetMapping("/no-db/no-coroutines")
-    fun callExternalApiWithNoDatabaseAndNoCoroutines() = externalHandler.callExternalApiWithNoDatabaseAndNoCoroutines()
+    fun callExternalApiWithNoDatabaseAndNoCoroutines() =
+        externalHandler.callExternalApiWithNoDatabaseAndNoCoroutines()
 }

@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.webflux
 
+import java.time.LocalDateTime
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import me.bossm0n5t3r.dto.UserRequest
@@ -12,18 +13,14 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.bodyAndAwait
-import java.time.LocalDateTime
 
-/**
- * Spring WebFlux Handler for reactive operations
- */
+/** Spring WebFlux Handler for reactive operations */
 @Component
 class UserHandler(
     private val userRepository: ReactiveUserRepository,
 ) {
     suspend fun getAllUsers(request: ServerRequest): ServerResponse =
-        ServerResponse
-            .ok()
+        ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyAndAwait(userRepository.findAllOrderByCreatedAtDesc().map { it.toDto() }.asFlow())
 
@@ -34,8 +31,7 @@ class UserHandler(
 
         return try {
             val user = userRepository.findById(id).awaitSingle()
-            ServerResponse
-                .ok()
+            ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(user.toDto())
                 .awaitSingle()
@@ -46,8 +42,7 @@ class UserHandler(
 
     suspend fun searchUsersByName(request: ServerRequest): ServerResponse {
         val name = request.queryParam("name").orElse("")
-        return ServerResponse
-            .ok()
+        return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyAndAwait(userRepository.findByNameContaining(name).map { it.toDto() }.asFlow())
     }
@@ -56,8 +51,7 @@ class UserHandler(
         val email = request.pathVariable("email")
         return try {
             val user = userRepository.findByEmail(email).awaitSingle()
-            ServerResponse
-                .ok()
+            ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(user.toDto())
                 .awaitSingle()
@@ -77,8 +71,7 @@ class UserHandler(
                     updatedAt = LocalDateTime.now(),
                 )
             val savedUser = userRepository.save(user).awaitSingle()
-            ServerResponse
-                .ok()
+            ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(savedUser.toDto())
                 .awaitSingle()
@@ -101,8 +94,7 @@ class UserHandler(
                     updatedAt = LocalDateTime.now(),
                 )
             val savedUser = userRepository.save(updatedUser).awaitSingle()
-            ServerResponse
-                .ok()
+            ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(savedUser.toDto())
                 .awaitSingle()
