@@ -30,7 +30,7 @@ MVC(virtual thread 유무)와 WebFlux(코루틴 유무) 조합을 동일한 API/
 ./gradlew external-app:bootRun
 ```
 
-애플리케이션 실행 시 Spring Boot Docker Compose가 PostgreSQL을 자동으로 띄웁니다. 수동 관리가 필요하면 `docker-compose.yaml`을 사용하세요.
+애플리케이션 실행 시 Spring Boot Docker Compose가 PostgreSQL을 자동으로 띄웁니다. 수동 관리가 필요하면 `compose.yaml`을 사용하세요.
 
 ## 벤치마크
 
