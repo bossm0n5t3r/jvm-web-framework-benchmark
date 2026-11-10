@@ -8,10 +8,8 @@ import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import java.util.UUID
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import me.bossm0n5t3r.dto.ExternalApiResponseDto
 import me.bossm0n5t3r.repository.ExternalApiResponseRepository
 import me.bossm0n5t3r.util.Constants
@@ -48,29 +46,24 @@ class ExternalApiService(
     suspend fun callExternalApiWithDatabase() =
         externalApiResponseRepository.save(callExternalApiWithNoDatabase())
 
-    suspend fun callExternalApiWithNoDatabase() =
-        withContext(Dispatchers.IO) {
-            coroutineScope {
-                val uuid = UUID.randomUUID().toString()
-                val userInfo = async { callExternalApi("/api/external/user/$uuid") }
-                val weatherInfo = async {
-                    callExternalApi("/api/external/weather", mapOf("city" to CITIES.random()))
-                }
-                val stockInfo = async {
-                    callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}")
-                }
-                val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
-                val metricInfo = async { callExternalApi("/api/external/metrics") }
-
-                ExternalApiResponseDto(
-                    userInfo = userInfo.await(),
-                    weatherInfo = weatherInfo.await(),
-                    stockPriceInfo = stockInfo.await(),
-                    orderStatusInfo = orderInfo.await(),
-                    metricInfo = metricInfo.await(),
-                )
-            }
+    suspend fun callExternalApiWithNoDatabase() = coroutineScope {
+        val uuid = UUID.randomUUID().toString()
+        val userInfo = async { callExternalApi("/api/external/user/$uuid") }
+        val weatherInfo = async {
+            callExternalApi("/api/external/weather", mapOf("city" to CITIES.random()))
         }
+        val stockInfo = async { callExternalApi("/api/external/stock/${STOCK_SYMBOLS.random()}") }
+        val orderInfo = async { callExternalApi("/api/external/order/$uuid") }
+        val metricInfo = async { callExternalApi("/api/external/metrics") }
+
+        ExternalApiResponseDto(
+            userInfo = userInfo.await(),
+            weatherInfo = weatherInfo.await(),
+            stockPriceInfo = stockInfo.await(),
+            orderStatusInfo = orderInfo.await(),
+            metricInfo = metricInfo.await(),
+        )
+    }
 
     private suspend fun callExternalApi(
         endpoint: String,
