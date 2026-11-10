@@ -27,12 +27,11 @@ dependencies {
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.status.pages)
-    implementation(libs.ktor.serialization.jackson)
+    implementation(libs.ktor.serialization.jackson3)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
 
     implementation(libs.jackson.module.kotlin)
-    implementation(libs.jackson.datatype.jsr310)
 
     implementation(libs.hikaricp)
     runtimeOnly(libs.postgresql)

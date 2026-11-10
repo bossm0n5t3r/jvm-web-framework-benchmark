@@ -1,8 +1,7 @@
 package me.bossm0n5t3r
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStarted
 import io.ktor.server.application.ApplicationStopped
@@ -35,7 +34,7 @@ fun Application.module() {
     val externalRepository = ExternalApiResponseRepository(database)
     val externalApiService = ExternalApiService(externalRepository)
 
-    install(ContentNegotiation) { jackson { registerModule(JavaTimeModule()) } }
+    install(ContentNegotiation) { jackson() }
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
