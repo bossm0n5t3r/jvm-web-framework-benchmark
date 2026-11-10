@@ -33,10 +33,4 @@ class DatabaseFactory(
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(Users, ExternalApiResponses)
         }
-
-    fun dropTables() =
-        transaction(database) {
-            addLogger(StdOutSqlLogger)
-            SchemaUtils.drop(Users, ExternalApiResponses)
-        }
 }

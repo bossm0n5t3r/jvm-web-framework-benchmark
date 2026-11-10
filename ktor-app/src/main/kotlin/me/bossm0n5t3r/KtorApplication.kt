@@ -27,7 +27,6 @@ fun Application.module() {
     }
     monitor.subscribe(ApplicationStopped) { application ->
         application.environment.log.info("Server is stopped")
-        databaseFactory.dropTables()
     }
     val database = databaseFactory.database
     val userRepository = UserRepository(database)
