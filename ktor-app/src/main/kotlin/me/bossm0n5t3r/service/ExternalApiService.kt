@@ -28,10 +28,9 @@ class ExternalApiService(
     private val httpClient =
         HttpClient(CIO) {
             engine {
-                maxConnectionsCount = 1000
+                maxConnectionsCount = Constants.MAX_CONNECTIONS
                 endpoint {
-                    maxConnectionsPerRoute = 1000
-                    pipelineMaxSize = 20
+                    maxConnectionsPerRoute = Constants.MAX_CONNECTIONS_PER_ROUTE
                     connectTimeout = Constants.CONNECT_TIMEOUT_MILLIS
                     requestTimeout = Constants.RESPONSE_TIMEOUT_MILLIS
                 }
