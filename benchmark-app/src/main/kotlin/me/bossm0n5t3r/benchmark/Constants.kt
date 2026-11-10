@@ -10,4 +10,6 @@ object Constants {
     const val APPLICATION_JSON = "application/json"
 
     const val SIMULATION_RESPONSE_TIME_IN_MILLIS = 10_000
+    const val SIMULATION_P95_RESPONSE_TIME_IN_MILLIS = 6_000
+    const val SIMULATION_SUCCESS_PERCENT = 99.0
 }
