@@ -19,14 +19,14 @@ CREATE TABLE IF NOT EXISTS external_api_responses (
 );
 
 -- Create index for better query performance
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_name ON users(name);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_name ON users (name);
 
 -- Insert some sample data for testing
-INSERT INTO users (name, email) VALUES 
-    ('John Doe', 'john.doe@example.com'),
-    ('Jane Smith', 'jane.smith@example.com'),
-    ('Bob Johnson', 'bob.johnson@example.com'),
-    ('Alice Brown', 'alice.brown@example.com'),
-    ('Charlie Davis', 'charlie.davis@example.com')
+INSERT INTO users (name, email) VALUES
+('John Doe', 'john.doe@example.com'),
+('Jane Smith', 'jane.smith@example.com'),
+('Bob Johnson', 'bob.johnson@example.com'),
+('Alice Brown', 'alice.brown@example.com'),
+('Charlie Davis', 'charlie.davis@example.com')
 ON CONFLICT (email) DO NOTHING;
