@@ -21,24 +21,32 @@ class ExternalAppSimulation : Simulation() {
     private val httpProtocol =
         http.baseUrl(url).acceptHeader(APPLICATION_JSON).contentTypeHeader(APPLICATION_JSON)
 
-    private val scenario: ScenarioBuilder
-        get() {
-            val uuid = UUID.randomUUID().toString()
-            return scenario("External APP Load Test")
-                .exec(
-                    http("Get User").get("/api/external/user/$uuid").check(status().`is`(200)),
-                    http("Get Weather")
-                        .get("/api/external/weather?city=${cities.random()}")
-                        .check(status().`is`(200)),
-                    http("Get Stock Price")
-                        .get("/api/external/stock/${stockSymbols.random()}")
-                        .check(status().`is`(200)),
-                    http("Get Order Status")
-                        .get("/api/external/order/$uuid")
-                        .check(status().`is`(200)),
-                    http("Get Metrics").get("/api/external/metrics").check(status().`is`(200)),
-                )
-        }
+    // 가상 사용자마다 새 값을 뽑도록 무한 feeder를 씁니다.
+    private val feeder = generateSequence {
+        mapOf<String, Any>(
+            "uuid" to UUID.randomUUID().toString(),
+            "city" to cities.random(),
+            "stockSymbol" to stockSymbols.random(),
+        )
+    }
+        .iterator()
+
+    private val scenario: ScenarioBuilder =
+        scenario("External APP Load Test")
+            .feed(feeder)
+            .exec(
+                http("Get User").get("/api/external/user/#{uuid}").check(status().`is`(200)),
+                http("Get Weather")
+                    .get("/api/external/weather?city=#{city}")
+                    .check(status().`is`(200)),
+                http("Get Stock Price")
+                    .get("/api/external/stock/#{stockSymbol}")
+                    .check(status().`is`(200)),
+                http("Get Order Status")
+                    .get("/api/external/order/#{uuid}")
+                    .check(status().`is`(200)),
+                http("Get Metrics").get("/api/external/metrics").check(status().`is`(200)),
+            )
 
     init {
         setUp(
