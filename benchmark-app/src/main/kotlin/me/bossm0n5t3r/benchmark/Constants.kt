@@ -12,4 +12,8 @@ object Constants {
     const val SIMULATION_RESPONSE_TIME_IN_MILLIS = 10_000
     const val SIMULATION_P95_RESPONSE_TIME_IN_MILLIS = 6_000
     const val SIMULATION_SUCCESS_PERCENT = 99.0
+
+    // 가장 낮은 앱 한계(mvc-without-virtual-thread-app 기본값, 약 13 req/s)보다 낮게 둡니다.
+    const val WARM_UP_USERS_PER_SEC = 10.0
+    const val WARM_UP_DURATION_IN_SECONDS = 30L
 }
