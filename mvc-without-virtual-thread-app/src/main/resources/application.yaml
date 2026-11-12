@@ -19,6 +19,18 @@ spring:
 
 server:
   port: 8083
+  tomcat:
+    threads:
+      # Each request holds a Tomcat thread for about 5s → about threads / 5 req/s.
+      max: 200
+
+benchmark:
+  # Fixed platform thread pool size for parallel external API calls.
+  # Each request holds pool threads for 15s in total (1+2+3+4+5) → about pool size / 15 req/s.
+  # Throughput ≈ min(pool size / 15, tomcat threads / 5), so a tuned variant must raise both
+  # (tomcat threads ≥ pool size / 3), e.g.
+  #   --benchmark.platform-thread-pool-size=1000 --server.tomcat.threads.max=334
+  platform-thread-pool-size: 200
 
 # Logging configuration
 logging:
