@@ -47,6 +47,10 @@ dependencies {
     )
 }
 
+// Spring Boot BOM이 간접 의존성인 kotlinx-coroutines-core-jvm/-reactive를 BOM 버전으로 고정하므로,
+// 직접 선언한 core/reactor와 버전이 어긋나지 않도록 BOM의 코루틴 버전을 catalog 버전에 맞춥니다.
+extra["kotlin-coroutines.version"] = libs.versions.kotlinx.coroutines.get()
+
 kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
 tasks.withType<Test> { useJUnitPlatform() }
