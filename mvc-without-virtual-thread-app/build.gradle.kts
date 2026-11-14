@@ -46,6 +46,9 @@ dependencies {
     testImplementation(libs.spring.boot.starter.test)
 }
 
+// spring-boot-docker-compose가 루트의 compose.yaml을 찾을 수 있도록 루트 디렉터리에서 실행합니다.
+tasks.bootRun { workingDir = rootDir }
+
 kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
 tasks.withType<Test> { useJUnitPlatform() }

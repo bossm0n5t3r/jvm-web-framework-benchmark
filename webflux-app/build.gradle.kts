@@ -51,6 +51,9 @@ dependencies {
 // 직접 선언한 core/reactor와 버전이 어긋나지 않도록 BOM의 코루틴 버전을 catalog 버전에 맞춥니다.
 extra["kotlin-coroutines.version"] = libs.versions.kotlinx.coroutines.get()
 
+// spring-boot-docker-compose가 루트의 compose.yaml을 찾을 수 있도록 루트 디렉터리에서 실행합니다.
+tasks.bootRun { workingDir = rootDir }
+
 kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
 tasks.withType<Test> { useJUnitPlatform() }
